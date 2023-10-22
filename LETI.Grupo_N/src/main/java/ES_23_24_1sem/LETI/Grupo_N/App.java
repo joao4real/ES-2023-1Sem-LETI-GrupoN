@@ -12,7 +12,7 @@ public class App {
 		System.out.println("Do you want to read local or remote archives? (l/r): ");
 		String option = scanner.nextLine();
 
-		switch (option) { //wsss
+		switch (option) {
 
 		case "l":
 			System.out.println("Type the path for local archive: ");
