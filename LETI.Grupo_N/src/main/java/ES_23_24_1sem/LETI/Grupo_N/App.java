@@ -6,24 +6,22 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class App {
+	
 	public static void main(String[] args) {
 
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Do you want to read local or remote archives? (l/r): ");
-		String option = scanner.nextLine();
 
-		switch (option) {
+		switch (scanner.nextLine()) {
 
 		case "l":
 			System.out.println("Type the path for local archive: ");
-			String path = scanner.nextLine();
-			readLocalArchive(path);
+			readLocalArchive(scanner.nextLine());
 			break;
-			
+
 		case "r":
 			System.out.println("Type the URL for remote archive: ");
-			String url = scanner.nextLine();
-			readRemoteArchive(url);
+			readRemoteArchive(scanner.nextLine());
 			break;
 
 		default:
@@ -48,8 +46,7 @@ public class App {
 
 	public static void readRemoteArchive(String urlStr) {
 		try {
-			URL url = new URL(urlStr);
-			InputStream in = url.openStream();
+			InputStream in = new URL(urlStr).openStream();
 			Scanner scanner = new Scanner(in);
 			while (scanner.hasNextLine()) {
 				System.out.println(scanner.nextLine());
