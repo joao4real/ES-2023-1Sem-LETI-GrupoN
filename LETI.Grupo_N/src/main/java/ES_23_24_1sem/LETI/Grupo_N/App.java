@@ -20,25 +20,33 @@ public class App {
 		case "l":
 			System.out.println("Type the path for local archive: ");
 			schedule = Schedule.createScheduleByLocalFile(scanner.nextLine());
-			System.out.println(schedule.getMap().get("Unidade Curricular"));
 			break;
 
 		case "r":
 			System.out.println("Type the URL for remote archive: ");
 			schedule = Schedule.createScheduleByRemoteFile(scanner.nextLine());
-			System.out.println(schedule.getMap().get("Unidade Curricular"));
 			break;
 
 		default:
-			System.out.println("Invalid Option");
+			System.err.println("Invalid Option");
 			break;
 		}
 		scanner.close();
 
 		File htmlFile = createHTMLFile(schedule);
-		Desktop desk = Desktop.getDesktop();
-		desk.browse(htmlFile.toURI());
-		System.out.println(htmlFile);
+		Desktop.getDesktop().browse(htmlFile.toURI());
+		try {
+		    Thread.sleep(5000); // Sleep for 5 seconds (adjust the time as needed)
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
+
+		// After the delay, delete the file
+		if (htmlFile.delete()) {
+		    System.out.println("HTML file deleted successfully.");
+		} else {
+		    System.err.println("Failed to delete HTML file.");
+		}
 	}
 
 	// Create HTML file
@@ -46,8 +54,6 @@ public class App {
 	private static File createHTMLFile(Schedule schedule) throws IOException {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
-		System.out.println(path);
-		// Use relative path for Unix systems
 		File f = new File(path);
 
 		f.getParentFile().mkdirs();
