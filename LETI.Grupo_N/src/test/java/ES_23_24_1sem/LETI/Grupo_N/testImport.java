@@ -24,7 +24,7 @@ class testImport {
 
 	    @Test
 	    void testCreateScheduleByRemoteFile() {
-	        String urlStr = "http://example.com/test.txt";
+	        String urlStr = "https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/JUnit_why/Testes_JUnit.csv";
 	        Schedule schedule = Schedule.createScheduleByRemoteFile(urlStr);
 	        assertFalse(schedule.getMap().isEmpty());
 	        LinkedHashMap<String, List<String>> expectedContent = new LinkedHashMap<>();
