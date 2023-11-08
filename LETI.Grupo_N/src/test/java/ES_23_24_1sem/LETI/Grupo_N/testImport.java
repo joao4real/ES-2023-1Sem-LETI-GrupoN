@@ -10,7 +10,7 @@ class testImport {
 
 	  @Test
 	    void testCreateScheduleByLocalFile() {
-	        String path = "C:\\Users\\Pedro\\git\\ES-2023-1Sem-LETI-GrupoN\\Testes_JUnit.csv";
+	        String path = "Testes_JUnit.csv";
 	        Schedule schedule = Schedule.createScheduleByLocalFile(path);
 	        assertFalse(schedule.getMap().isEmpty());
 	        LinkedHashMap<String, List<String>> expectedContent = new LinkedHashMap<>();
@@ -24,7 +24,7 @@ class testImport {
 
 	    @Test
 	    void testCreateScheduleByRemoteFile() {
-	        String urlStr = "https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/JUnit_why/Testes_JUnit.csv";
+	        String urlStr = "https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/LETI.Grupo_N/Testes_JUnit.csv";
 	        Schedule schedule = Schedule.createScheduleByRemoteFile(urlStr);
 	        assertFalse(schedule.getMap().isEmpty());
 	        LinkedHashMap<String, List<String>> expectedContent = new LinkedHashMap<>();
