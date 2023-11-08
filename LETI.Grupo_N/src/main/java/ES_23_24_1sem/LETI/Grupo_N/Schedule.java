@@ -60,8 +60,8 @@ public class Schedule {
 
 		String[] data = my_split(line);
 		int i = 0;
-		for (String key : getMap().keySet())
-			getMap().get(key).add(data[i++]);
+		for (String key : map.keySet())
+			map.get(key).add(data[i++]);
 	}
 
 	private static String[] my_split(String line) {
@@ -85,7 +85,7 @@ public class Schedule {
 		String[] labels = line.split(";");
 
 		for (int i = 0; i < labels.length; i++)
-			getMap().put(labels[i], new ArrayList<String>());
+			map.put(labels[i], new ArrayList<String>());
 
 		while (sc.hasNextLine())
 			addInfoByLine(sc.nextLine());
@@ -94,4 +94,6 @@ public class Schedule {
 	public LinkedHashMap<String, List<String>> getMap() {
 		return map;
 	}
+
+	
 }
