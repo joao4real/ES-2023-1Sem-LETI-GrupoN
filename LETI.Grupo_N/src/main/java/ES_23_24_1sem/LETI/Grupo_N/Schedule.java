@@ -66,9 +66,8 @@ public class Schedule {
 
 	private static String[] my_split(String line) {
 		String[] arr = new String[11];
-		int i = 0;
-		int s = 0;
-		int f = 0;
+		int i,s,f;
+		i = s = f = 0;
 		for (int j = 0; j < line.length(); j++) {
 			if (line.charAt(j) == ';') {
 				arr[i++] = (s == f) ? "N/A" : line.substring(s, f);
