@@ -45,7 +45,8 @@ public class App {
 
 	private static File createHTMLFile(Schedule schedule) throws IOException {
 
-		String path = "C:\\Users\\Eu\\git\\ES-2023-1Sem-LETI-GrupoN\\LETI.Grupo_N\\src\\main\\java\\ES_23_24_1sem\\LETI\\Grupo_N\\SalasDeAulaPorTiposDeSala1.html";
+		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
+		System.out.println(path);
 		// Use relative path for Unix systems
 		File f = new File(path);
 
