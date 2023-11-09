@@ -10,14 +10,23 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
-
+/**
+ * Class representing a schedule.
+ */
 public class Schedule {
 
 	private LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
-
+	/**
+     * Default constructor for the Schedule class.
+     */
 	public Schedule() {
 	}
-
+	
+	/**
+     * Creates a Schedule object by reading data from a local file.
+     * @param path The path to the local file.
+     * @return The created Schedule object.
+     */
 	public static Schedule createScheduleByLocalFile(String path) {
 		
 		Schedule schedule = new Schedule();
@@ -34,6 +43,11 @@ public class Schedule {
 		return schedule;
 	}
 	
+	  /**
+     * Creates a Schedule object by reading data from a remote file.
+     * @param urlStr The URL of the remote file.
+     * @return The created Schedule object.
+     */
 	public static Schedule createScheduleByRemoteFile(String urlStr) {
 		
 		Schedule schedule = new Schedule();
@@ -54,8 +68,12 @@ public class Schedule {
 	    }
 		
 		return schedule;
-}
+	}
 
+	/**
+     * Adds information to the schedule by reading a line of data.
+     * @param line The line of data.
+     */
 	private void addInfoByLine(String line) {
 
 		String[] data = my_split(line);
@@ -64,6 +82,11 @@ public class Schedule {
 			map.get(key).add(data[i++]);
 	}
 
+	  /**
+     * Splits a line of data into an array of strings.
+     * @param line The line of data.
+     * @return The array of strings.
+     */
 	private static String[] my_split(String line) {
 		String[] arr = new String[11];
 		int i,s,f;
@@ -79,6 +102,10 @@ public class Schedule {
 		return arr;
 	}
 
+	/**
+     * Reads data from a file to populate the schedule.
+     * @param sc The Scanner object used to read the file.
+     */
 	public void readFile(Scanner sc) {
 		String line = sc.nextLine();
 		String[] labels = line.split(";");
@@ -90,6 +117,10 @@ public class Schedule {
 			addInfoByLine(sc.nextLine());
 	}
 
+	/**
+     * Gets the map representing the schedule.
+     * @return The map representing the schedule.
+     */
 	public LinkedHashMap<String, List<String>> getMap() {
 		return map;
 	}

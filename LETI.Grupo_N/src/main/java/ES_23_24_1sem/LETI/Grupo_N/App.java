@@ -5,9 +5,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
-
+/**
+ * Main class of the application.
+ */
 public class App {
-
+	 /**
+     * Main method of the application.
+     * @param args Command line arguments.
+     * @throws IOException If an input or output exception occurred.
+     */
 	public static void main(String[] args) throws IOException {
 
 		Schedule schedule = new Schedule();
@@ -50,7 +56,12 @@ public class App {
 	}
 
 	// Create HTML file
-
+	/**
+     * Creates an HTML file.
+     * @param schedule The schedule to be written to the HTML file.
+     * @return The created HTML file.
+     * @throws IOException If an input or output exception occurred.
+     */
 	private static File createHTMLFile(Schedule schedule) throws IOException {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
