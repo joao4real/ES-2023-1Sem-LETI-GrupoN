@@ -67,9 +67,6 @@ public class App {
 		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
 		File f = new File(path);
 
-		f.getParentFile().mkdirs();
-		f.createNewFile();
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("<!DOCTYPE html>\r\n" + "<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\r\n"
 				+ "	<head>\r\n" + "		<meta charset=\"utf-8\" />\r\n"
