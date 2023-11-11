@@ -1,38 +1,26 @@
 package ES_23_24_1sem.LETI.Grupo_N;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+import java.io.IOException;
+import java.io.File;
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
+public class AppTest {
 
-    /**
-     * Rigourous Test :-)
+	  /**
+     * Tests the createHTMLFile method of the App class.
+     * <p>
+     * This test checks if the createHTMLFile method is able to create an HTML file from a Schedule object.
+     * The Schedule object is created from a remote file. The test checks if the HTML file exists after its creation.
+     * 
+     * @throws IOException If an input/output exception occurs.
      */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    public void testCreateHTMLFile() throws IOException {
+    	Schedule schedule = Schedule.createScheduleByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
+        File htmlFile = App.createHTMLFile(schedule);
+        assertNotNull(htmlFile);
+        assertTrue(htmlFile.exists());
     }
 }

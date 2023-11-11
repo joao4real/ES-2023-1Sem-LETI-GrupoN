@@ -62,7 +62,7 @@ public class App {
      * @return The created HTML file.
      * @throws IOException If an input or output exception occurred.
      */
-	private static File createHTMLFile(Schedule schedule) throws IOException {
+	public static File createHTMLFile(Schedule schedule) throws IOException {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
 		File f = new File(path);
