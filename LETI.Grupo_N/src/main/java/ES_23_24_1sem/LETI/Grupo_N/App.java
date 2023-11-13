@@ -16,9 +16,23 @@ public class App {
      */
 	public static void main(String[] args) throws IOException {
 
-		Schedule schedule = new Schedule();
+	
+		ClassroomsInfo ci = new ClassroomsInfo();
+		 
+		
+		Scanner Sc = new Scanner(new File("C:\\Users\\Joao\\Downloads\\CaracterizacaoDasSalas.csv"));
+		System.out.println(Sc.nextLine());
+		ci = ClassroomsInfo.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizacaoDasSalas.csv");
+		System.out.println(ci);
+	}
+	
+		
+		/*Schedule schedule = new Schedule();
 
 		Scanner scanner = new Scanner(System.in);
+		
+		
+		
 		System.out.println("Do you want to read local or remote archives? (l/r): ");
 
 		switch (scanner.nextLine()) {
@@ -38,7 +52,7 @@ public class App {
 			break;
 		}
 		scanner.close();
-
+		System.out.println();
 		File htmlFile = createHTMLFile(schedule);
 		Desktop.getDesktop().browse(htmlFile.toURI());
 		try {
@@ -53,7 +67,7 @@ public class App {
 		} else {
 		    System.err.println("Failed to delete HTML file.");
 		}
-	}
+	} */
 
 	// Create HTML file
 	/**
