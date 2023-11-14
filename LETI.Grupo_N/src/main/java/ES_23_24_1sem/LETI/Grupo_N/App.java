@@ -1,22 +1,15 @@
 package ES_23_24_1sem.LETI.Grupo_N;
 
-import java.awt.BorderLayout;
 import java.awt.Desktop;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import java.util.Stack;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,136 +21,141 @@ import javax.swing.JTextField;
  * Main class of the application.
  */
 public class App {
+
+	private static Stack<JPanel> menuStack = new Stack<>();
+	private static JFrame frame;
+
 	/**
 	 * Main method of the application.
 	 * 
 	 * @param args Command line arguments.
 	 * @throws IOException If an input or output exception occurred.
 	 */
-	
-	
-	public static void main(String[] args) throws IOException {		
-		
-	
-		JFrame frame = new JFrame("Schedule Analyser");
+
+	public static void main(String[] args) throws IOException {
+
+		frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
-
-		// Create label
-		JLabel label = new JLabel("Please choose which option you would like to run");
 
 		// Create two buttons
 		JButton button1 = new JButton("Visualize imported schedule");
 		JButton button2 = new JButton("Evaluate schedule qualitatively");
 
-		// Create a panel with GridBagLayout to center the buttons with space
+		// Create a panel with GridBagLayout to center the buttons with space between
+		// them
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.PAGE_START;
-		c.insets = new Insets(10, 0, 10, 0); // Add space (top, left, bottom, right)
+		c.insets = new Insets(10, 0, 10, 0);
 
-		panel.add(label, c);
+		panel.add(new JLabel("Please choose which option you would like to run"), c);
 
-		c.anchor = GridBagConstraints.CENTER;
+		// Move to the next row
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
 
-		// Add the first button
 		panel.add(button1, c);
 
 		// Move to the next row
-		c.gridy = 1; // Corrected to 1
+		c.gridy = 2;
+		c.anchor = GridBagConstraints.PAGE_END;
 
-		// Add the second button
 		panel.add(button2, c);
 
 		// Set the panel as the content pane of the frame
+		menuStack.push(panel);
 		frame.setContentPane(panel);
 
 		// Set frame properties
 		frame.setLocationRelativeTo(null); // Center the frame on the screen
 		frame.setVisible(true);
-		
-	}
-		/*JFrame frame = new JFrame();
-		frame.setSize(500, 500);
-
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		JButton button1 = new JButton("Visualize Schedule");
-		c.anchor = GridBagConstraints.CENTER;
-		panel.add(button1, c);
-		
-		JButton button2 = new JButton("Evaluate the schedule qualitatively");
-		c.anchor = GridBagConstraints.PAGE_END;
-		panel.add(button2,c);
-			
-
-		JTextField optionField = new JTextField(5);
-		JLabel optionLabel = new JLabel("Do you want to read local or remote file? (l/r): ");
-		c.anchor = GridBagConstraints.PAGE_START;
-		panel.add(optionLabel, c);
-		c.gridx = 2;
-		panel.add(optionField, c);
-
-		JTextField pathField = new JTextField(20);
-		JLabel pathLabel = new JLabel("Path or URL: ");
-		c.gridy = 1;
-		c.gridx = 1;
-		panel.add(pathLabel, c);
-		c.gridx = 2;
-		panel.add(pathField, c);
-
-		frame.add(panel);
 
 		button1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				
-				String option = optionField.getText();
-				String path = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
-				Schedule schedule = new Schedule();
-			
-				switch (option) {
-				case "l":
-					
-					schedule = Schedule.createScheduleByLocalFile(path);
-					 
-					break;
+				JPanel panel = new JPanel(new GridBagLayout());
+				GridBagConstraints c = new GridBagConstraints();
 
-				case "r":
-					schedule = Schedule.createScheduleByRemoteFile(path);
-					break;
+				c.gridx = 0;
+				c.gridy = 0;
+				c.anchor = GridBagConstraints.PAGE_START;
+				c.insets = new Insets(10, 0, 10, 0);
 
-				default:
-					System.err.println("Invalid Option");
-					return;
-				}
+				panel.add(new JLabel("Do you want to run local or remote file?"), c);
 
-				File htmlFile;
-				try {
-					htmlFile = createHTMLFile(schedule);
-					openWebPage(htmlFile);
-					Thread.sleep(5000); // Sleep for 5 seconds (adjust the time as needed)
-					if (htmlFile.delete())
-						System.out.println("HTML file deleted successfully.");
-					else
-						System.err.println("Failed to delete HTML file.");
+				JButton button3 = new JButton("Local");
+				JButton button4 = new JButton("Remote");
+				JButton button5 = new JButton("Back");
 
-				} catch (IOException e) {
-					e.printStackTrace();
+				// Add Local button
+				c.gridy = 1;
+				c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
+				panel.add(button3, c);
 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				// Add Remote button
+				c.gridy = 2;
+				panel.add(button4, c);
 
+				// Add Back button
+				c.gridy = 3;
+				c.anchor = GridBagConstraints.LAST_LINE_END;
+				panel.add(button5, c);
+				menuStack.push(panel);
+
+				button3.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						openSchedule("l", frame, panel);
+					}
+				});
+
+				button4.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						openSchedule("r", frame, panel);
+					}
+				});
+
+				button5.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						frame.setContentPane(menuStack.get(0));
+					}
+				});
+
+				// Set the panel as the content pane of the frame
+				frame.setContentPane(panel);
+				frame.setVisible(true);
 			}
 		});
 
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+	}
+
+	private static void openSchedule(String option, JFrame frame, JPanel panel) {
+		
+		panel.add(new JTextField(5));
+
+		try {
+			switch (option) {
+			case "l":
+				openWebPage(createHTMLFile(Schedule.createScheduleByLocalFile(
+						JOptionPane.showInputDialog(frame, "Type the path for local file", null))));
+				break;
+			case "r":
+				openWebPage(createHTMLFile(Schedule.createScheduleByRemoteFile(
+						JOptionPane.showInputDialog(frame, "Type the URL for remote file", null))));
+				break;
+			default:
+				System.err.println("Invalid Option");
+				return;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void openWebPage(File htmlFile) {
@@ -166,8 +164,7 @@ public class App {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	} 
-	
+	}
 
 	// Create HTML file
 	/**
