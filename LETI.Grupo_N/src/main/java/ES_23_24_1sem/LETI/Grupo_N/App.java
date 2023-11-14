@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 /**
  * Main class of the application.
  */
@@ -16,18 +19,25 @@ public class App {
      */
 	public static void main(String[] args) throws IOException {
 
-	
-		ClassroomsInfo ci = new ClassroomsInfo();
-		 
+		JFrame frame  = new JFrame();
+		JButton button1 = new JButton("Analyse schedule");
+		JButton button2 = new JButton("Evaluate the schedule qualitatively");
 		
-		Scanner Sc = new Scanner(new File("C:\\Users\\Joao\\Downloads\\CaracterizacaoDasSalas.csv"));
-		System.out.println(Sc.nextLine());
-		ci = ClassroomsInfo.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizacaoDasSalas.csv");
-		System.out.println(ci);
-	}
-	
+		button1.setBounds(180,50,200,80);
+		button2.setBounds(180,140,200,80);
 		
-		/*Schedule schedule = new Schedule();
+		frame.add(button1);
+		frame.add(button2);
+		frame.setLayout(null);
+		frame.setSize(500,300);
+		frame.setVisible(true);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	
+	} 
+	
+		/*
+		Schedule schedule = new Schedule();
 
 		Scanner scanner = new Scanner(System.in);
 		
@@ -67,7 +77,7 @@ public class App {
 		} else {
 		    System.err.println("Failed to delete HTML file.");
 		}
-	} */
+	}*/
 
 	// Create HTML file
 	/**
