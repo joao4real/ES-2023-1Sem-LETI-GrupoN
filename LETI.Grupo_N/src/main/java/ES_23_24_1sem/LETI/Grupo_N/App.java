@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -34,110 +36,116 @@ public class App {
 
 	public static void main(String[] args) throws IOException {
 
-	/*	frame = new JFrame("Schedule Analyser");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(350, 250);
+		/*
+		 * frame = new JFrame("Schedule Analyser");
+		 * frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); frame.setSize(350,
+		 * 250);
+		 * 
+		 * // Create two buttons JButton button1 = new
+		 * JButton("Visualize imported schedule"); JButton button2 = new
+		 * JButton("Evaluate schedule qualitatively");
+		 * 
+		 * // Create a panel with GridBagLayout to center the buttons with space between
+		 * // them JPanel panel = new JPanel(new GridBagLayout()); GridBagConstraints c
+		 * = new GridBagConstraints();
+		 * 
+		 * c.gridx = 0; c.gridy = 0; c.anchor = GridBagConstraints.PAGE_START; c.insets
+		 * = new Insets(10, 0, 10, 0);
+		 * 
+		 * panel.add(new JLabel("Please choose which option you would like to run"), c);
+		 * 
+		 * // Move to the next row c.gridy = 1; c.anchor = GridBagConstraints.CENTER; //
+		 * Set anchor to CENTER for the buttons
+		 * 
+		 * panel.add(button1, c);
+		 * 
+		 * // Move to the next row c.gridy = 2; c.anchor = GridBagConstraints.PAGE_END;
+		 * 
+		 * panel.add(button2, c);
+		 * 
+		 * // Set the panel as the content pane of the frame menuStack.push(panel);
+		 * frame.setContentPane(panel);
+		 * 
+		 * // Set frame properties frame.setLocationRelativeTo(null); // Center the
+		 * frame on the screen frame.setVisible(true);
+		 * 
+		 * button1.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent event) { JPanel panel = new
+		 * JPanel(new GridBagLayout()); GridBagConstraints c = new GridBagConstraints();
+		 * 
+		 * c.gridx = 0; c.gridy = 0; c.anchor = GridBagConstraints.PAGE_START; c.insets
+		 * = new Insets(10, 0, 10, 0);
+		 * 
+		 * panel.add(new JLabel("Do you want to run local or remote file?"), c);
+		 * 
+		 * JButton button3 = new JButton("Local"); JButton button4 = new
+		 * JButton("Remote"); JButton button5 = new JButton("Back");
+		 * 
+		 * // Add Local button c.gridy = 1; c.anchor = GridBagConstraints.CENTER; // Set
+		 * anchor to CENTER for the buttons panel.add(button3, c);
+		 * 
+		 * // Add Remote button c.gridy = 2; panel.add(button4, c);
+		 * 
+		 * // Add Back button c.gridy = 3; c.anchor = GridBagConstraints.LAST_LINE_END;
+		 * panel.add(button5, c); menuStack.push(panel);
+		 * 
+		 * button3.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent event) { openSchedule("l",
+		 * frame, panel); } });
+		 * 
+		 * button4.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent event) { openSchedule("r",
+		 * frame, panel); } });
+		 * 
+		 * button5.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent event) {
+		 * frame.setContentPane(menuStack.get(0)); } });
+		 * 
+		 * // Set the panel as the content pane of the frame
+		 * frame.setContentPane(panel); frame.setVisible(true); } }); }
+		 * 
+		 */
 
-		// Create two buttons
-		JButton button1 = new JButton("Visualize imported schedule");
-		JButton button2 = new JButton("Evaluate schedule qualitatively");
+		ClassroomsInfo ci = ClassroomsInfo
+				.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
+		for (String key : ci.getMap().keySet())
+			System.out.println(key);
 
-		// Create a panel with GridBagLayout to center the buttons with space between
-		// them
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		System.out.println("\n\n\n");
 
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.insets = new Insets(10, 0, 10, 0);
+		Schedule d = Schedule.createScheduleByLocalFile("C:\\Users\\Joao\\Downloads\\HorarioDeExemplo.csv");
+		for (String key : d.getMap().keySet())
+			System.out.println(key);
 
-		panel.add(new JLabel("Please choose which option you would like to run"), c);
+		OverCapacityFlag(d, ci);
+	}
 
-		// Move to the next row
-		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
+	
+	/*
+	 * Flag when the class size is bigger than the room capacity
+	 */
+	private static List<Integer> OverCapacityFlag(Schedule sc, ClassroomsInfo ci) {
 
-		panel.add(button1, c);
+		List<Integer> overCapacity = new ArrayList<>();
 
-		// Move to the next row
-		c.gridy = 2;
-		c.anchor = GridBagConstraints.PAGE_END;
+		for (int i = 0; i < sc.getMap().get("Sala atribuída à aula").size(); i++) {
 
-		panel.add(button2, c);
+			int index = ci.getMap().get("Nome sala").indexOf(sc.getMap().get("Sala atribuída à aula").get(i));
 
-		// Set the panel as the content pane of the frame
-		menuStack.push(panel);
-		frame.setContentPane(panel);
-
-		// Set frame properties
-		frame.setLocationRelativeTo(null); // Center the frame on the screen
-		frame.setVisible(true);
-
-		button1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JPanel panel = new JPanel(new GridBagLayout());
-				GridBagConstraints c = new GridBagConstraints();
-
-				c.gridx = 0;
-				c.gridy = 0;
-				c.anchor = GridBagConstraints.PAGE_START;
-				c.insets = new Insets(10, 0, 10, 0);
-
-				panel.add(new JLabel("Do you want to run local or remote file?"), c);
-
-				JButton button3 = new JButton("Local");
-				JButton button4 = new JButton("Remote");
-				JButton button5 = new JButton("Back");
-
-				// Add Local button
-				c.gridy = 1;
-				c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
-				panel.add(button3, c);
-
-				// Add Remote button
-				c.gridy = 2;
-				panel.add(button4, c);
-
-				// Add Back button
-				c.gridy = 3;
-				c.anchor = GridBagConstraints.LAST_LINE_END;
-				panel.add(button5, c);
-				menuStack.push(panel);
-
-				button3.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						openSchedule("l", frame, panel);
-					}
-				});
-
-				button4.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						openSchedule("r", frame, panel);
-					}
-				});
-
-				button5.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						frame.setContentPane(menuStack.get(0));
-					}
-				});
-
-				// Set the panel as the content pane of the frame
-				frame.setContentPane(panel);
-				frame.setVisible(true);
-			}
-		});
-
-		*/
-		
-		ClassroomsInfo ci = ClassroomsInfo.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Desktop\\CaracterizacaoSalas.csv");
-		for(String key : ci.getMap().keySet())
-			System.out.println(ci.getMap().get(key).get(0));
+			if (index != -1) {
+				if (Integer.parseInt(ci.getMap().get("Capacidade Normal").get(index)) > Integer
+						.parseInt(sc.getMap().get("Inscritos no turno").get(i)))
+					overCapacity.add(0);
+				else
+					overCapacity.add(1);
+			} else
+				overCapacity.add(0);
+		}
+		return overCapacity;
 	}
 
 	private static void openSchedule(String option, JFrame frame, JPanel panel) {

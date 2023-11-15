@@ -32,7 +32,7 @@ public abstract class HashData {
      */
 	
 	private String[] my_split(String line) {
-		String[] arr = new String[mapSize];
+		String[] arr = new String[getMapSize()];
 		int i,s,f;
 		i = s = f = 0;
 		for (int j = 0; j < line.length(); j++) {
@@ -56,7 +56,7 @@ public abstract class HashData {
 		String[] labels = line.split(";");
 		mapSize = labels.length;
 
-		for (int i = 0; i < mapSize; i++)
+		for (int i = 0; i < getMapSize(); i++)
 			map.put(labels[i], new ArrayList<String>());
 
 		while (sc.hasNextLine())
@@ -69,5 +69,9 @@ public abstract class HashData {
      */
 	public LinkedHashMap<String, List<String>> getMap() {
 		return map;
+	}
+
+	public int getMapSize() {
+		return mapSize;
 	}
 }
