@@ -136,19 +136,28 @@ public class App {
 	}
 
 	private static void openSchedule(String option, JFrame frame, JPanel panel) {
-		
+
 		panel.add(new JTextField(5));
+		String input;
 
 		try {
 			switch (option) {
 			case "l":
-				openWebPage(createHTMLFile(Schedule.createScheduleByLocalFile(
-						JOptionPane.showInputDialog(frame, "Type the path for local file", null))));
+				input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
+				if (input != null) {
+					if (!input.isEmpty())
+						openWebPage(createHTMLFile(Schedule.createScheduleByLocalFile(input)));
+				}
 				break;
+
 			case "r":
-				openWebPage(createHTMLFile(Schedule.createScheduleByRemoteFile(
-						JOptionPane.showInputDialog(frame, "Type the URL for remote file", null))));
+				input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
+				if (input != null) {
+					if (!input.isEmpty())
+						openWebPage(createHTMLFile(Schedule.createScheduleByRemoteFile(input)));
+				}
 				break;
+
 			default:
 				System.err.println("Invalid Option");
 				return;
