@@ -34,7 +34,7 @@ public class App {
 
 	public static void main(String[] args) throws IOException {
 
-		frame = new JFrame("Schedule Analyser");
+	/*	frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
 
@@ -133,6 +133,11 @@ public class App {
 			}
 		});
 
+		*/
+		
+		ClassroomsInfo ci = ClassroomsInfo.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Desktop\\CaracterizacaoSalas.csv");
+		for(String key : ci.getMap().keySet())
+			System.out.println(ci.getMap().get(key).get(0));
 	}
 
 	private static void openSchedule(String option, JFrame frame, JPanel panel) {
@@ -142,6 +147,7 @@ public class App {
 
 		try {
 			switch (option) {
+
 			case "l":
 				input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
 				if (input != null) {
