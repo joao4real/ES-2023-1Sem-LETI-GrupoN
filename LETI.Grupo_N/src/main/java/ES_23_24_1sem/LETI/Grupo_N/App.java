@@ -111,38 +111,37 @@ public class App {
 		 */
 
 		ClassroomsInfo ci = ClassroomsInfo
-				.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
+				.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizacaoDasSalas.csv");
 		for (String key : ci.getMap().keySet())
 			System.out.println(key);
 
 		System.out.println("\n\n\n");
 
-		Schedule d = Schedule.createScheduleByLocalFile("C:\\Users\\Joao\\Downloads\\HorarioDeExemplo.csv");
+		Schedule d = Schedule.createScheduleByLocalFile("D:\\Joao\\Downloads\\HorarioDeExemplo.csv");
 		for (String key : d.getMap().keySet())
 			System.out.println(key);
 
-		OverCapacityFlag(d, ci);
+		overCapacity(d, ci);
 	}
+	
+
 
 	
+	
+	
 	/*
-	 * Flag when the class size is bigger than the room capacity
+	 * Return difference between class size and classroom size
 	 */
-	private static List<Integer> OverCapacityFlag(Schedule sc, ClassroomsInfo ci) {
+	private static List<Integer> overCapacity(Schedule sc, ClassroomsInfo ci) {
 
 		List<Integer> overCapacity = new ArrayList<>();
 
 		for (int i = 0; i < sc.getMap().get("Sala atribuída à aula").size(); i++) {
-
 			int index = ci.getMap().get("Nome sala").indexOf(sc.getMap().get("Sala atribuída à aula").get(i));
-
-			if (index != -1) {
-				if (Integer.parseInt(ci.getMap().get("Capacidade Normal").get(index)) > Integer
-						.parseInt(sc.getMap().get("Inscritos no turno").get(i)))
-					overCapacity.add(0);
-				else
-					overCapacity.add(1);
-			} else
+			if (index != -1)
+				overCapacity.add(Math.max(Integer.parseInt(sc.getMap().get("Inscritos no turno").get(i))
+						- Integer.parseInt(ci.getMap().get("Capacidade Normal").get(index)), 0));
+			else
 				overCapacity.add(0);
 		}
 		return overCapacity;
