@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Stack;
 import javax.swing.JButton;
@@ -111,40 +112,63 @@ public class App {
 		 */
 
 		ClassroomsInfo ci = ClassroomsInfo
-				.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizacaoDasSalas.csv");
+				.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
 		for (String key : ci.getMap().keySet())
 			System.out.println(key);
 
 		System.out.println("\n\n\n");
 
-		Schedule d = Schedule.createScheduleByLocalFile("D:\\Joao\\Downloads\\HorarioDeExemplo.csv");
+		Schedule d = Schedule.createScheduleByLocalFile("C:\\Users\\Joao\\Downloads\\HorarioDeExemplo.csv");
 		for (String key : d.getMap().keySet())
 			System.out.println(key);
 
-		overCapacity(d, ci);
+//		overCapacity(d, ci);
 	}
-	
 
-
-	
-	
-	
 	/*
 	 * Return difference between class size and classroom size
 	 */
-	private static List<Integer> overCapacity(Schedule sc, ClassroomsInfo ci) {
+	private static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
+			List<Boolean> matchRequirements) {
 
-		List<Integer> overCapacity = new ArrayList<>();
+		LinkedHashMap<String, List<String>> scMap = sc.getMap();
+		LinkedHashMap<String, List<String>> ciMap = ci.getMap();
 
-		for (int i = 0; i < sc.getMap().get("Sala atribuída à aula").size(); i++) {
-			int index = ci.getMap().get("Nome sala").indexOf(sc.getMap().get("Sala atribuída à aula").get(i));
-			if (index != -1)
-				overCapacity.add(Math.max(Integer.parseInt(sc.getMap().get("Inscritos no turno").get(i))
-						- Integer.parseInt(ci.getMap().get("Capacidade Normal").get(index)), 0));
-			else
-				overCapacity.add(0);
+		for (int i = 0; i < scMap.get("Sala atribuída à aula").size(); i++) {
+			
+			String givenRoom = scMap.get("Sala atribuída à aula").get(i);
+
+			overCapacity.add(getOverCapacity(scMap, ciMap, i, givenRoom);
+
 		}
-		return overCapacity;
+	}
+	
+	private static boolean matchRequirements(LinkedHashMap<String, List<String>> scMap,
+			LinkedHashMap<String, List<String>> ciMap, int i, String givenRoom) {
+		
+		// Index of room line in database
+			int index = ciMap.get("Nome sala").indexOf(givenRoom);
+		
+			if()
+		
+		return
+	
+	
+}
+	
+
+	private static int getOverCapacity(LinkedHashMap<String, List<String>> scMap,
+			LinkedHashMap<String, List<String>> ciMap, int i, String givenRoom) {
+
+		// Index of room line in database
+		int index = ciMap.get("Nome sala").indexOf(givenRoom);
+
+		if (index != -1)
+			return Math.max(Integer.parseInt(scMap.get("Inscritos no turno").get(i))
+					- Integer.parseInt(ciMap.get("Capacidade Normal").get(index)), 0);
+		else
+			return 0;
+
 	}
 
 	private static void openSchedule(String option, JFrame frame, JPanel panel) {
