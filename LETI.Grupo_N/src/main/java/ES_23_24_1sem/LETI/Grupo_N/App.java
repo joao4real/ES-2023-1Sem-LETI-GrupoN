@@ -31,10 +31,11 @@ public class App {
 	private static JFrame frame;
 
 	/**
-	 * Main method of the application.
-	 * 
-	 * @param args Command line arguments.
-	 * @throws IOException If an input or output exception occurred.
+	 * The main method of the Schedule Analyser application.
+	 * It creates a JFrame with two buttons for visualizing an imported schedule and evaluating a schedule qualitatively.
+	 * It also sets up action listeners for the buttons to handle user interactions.
+	 * @param args command-line arguments (not used)
+	 * @throws IOException if there is an error reading the local files
 	 */
 
 	public static void main(String[] args) throws IOException {
@@ -151,10 +152,18 @@ public class App {
 		analyse(d, ci, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
 	}
 
-	/*
-	 * Return the result of the main queries
+	/**
+	 * This method analyses the given schedule and classrooms information.
+	 * It checks for overcapacity, matches requirements, unused features, and classes without rooms.
+	 * The results are stored in the provided lists.
+	 * @param sc the schedule to be analysed
+	 * @param ci the classrooms information
+	 * @param overCapacity a list to store the overcapacity results
+	 * @param matchRequirements a list to store the match requirements results
+	 * @param featuresNotUsed a list to store the unused features results
+	 * @param classWithoutRoom a list to store the classes without rooms results
 	 */
-	private static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
+	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
 			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
 
 		LinkedHashMap<String, List<String>> scMap = sc.getMap();
@@ -173,12 +182,12 @@ public class App {
 		}
 	}
 
-	private static boolean isClassWithoutRoom(LinkedHashMap<String, List<String>> scMap, int i) {
+	public static boolean isClassWithoutRoom(LinkedHashMap<String, List<String>> scMap, int i) {
 		return (!scMap.get("Características da sala pedida para a aula").get(i).equals("Não necessita de sala")
 				&& scMap.get("Sala atribuída à aula").get(i).equals("N/A")) ? true : false;
 	}
 
-	private static boolean matchRequirements(List<String> roomRequirements, List<String> roomFeatures) {
+	public static boolean matchRequirements(List<String> roomRequirements, List<String> roomFeatures) {
 		if (roomRequirements == null)
 			return true;
 
@@ -198,7 +207,7 @@ public class App {
 		return remainingRequirements.isEmpty();
 	}
 
-	private static List<String> getRoomRequirements(LinkedHashMap<String, List<String>> scMap, int i) {
+	public static List<String> getRoomRequirements(LinkedHashMap<String, List<String>> scMap, int i) {
 		return (scMap.get("Características da sala pedida para a aula").get(i).equals("Não necessita de sala")) ? null
 				: Arrays.asList(scMap.get("Características da sala pedida para a aula").get(i).split("/"));
 	}
@@ -261,7 +270,7 @@ public class App {
 		}
 	}
 
-	private static void openWebPage(File htmlFile) {
+	public static void openWebPage(File htmlFile) {
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
 		} catch (IOException e) {
