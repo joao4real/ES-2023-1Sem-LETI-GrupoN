@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,9 +30,11 @@ public class App {
 	private static JFrame frame;
 
 	/**
-	 * The main method of the Schedule Analyser application.
-	 * It creates a JFrame with two buttons for visualizing an imported schedule and evaluating a schedule qualitatively.
-	 * It also sets up action listeners for the buttons to handle user interactions.
+	 * The main method of the Schedule Analyser application. It creates a JFrame
+	 * with two buttons for visualizing an imported schedule and evaluating a
+	 * schedule qualitatively. It also sets up action listeners for the buttons to
+	 * handle user interactions.
+	 * 
 	 * @param args command-line arguments (not used)
 	 * @throws IOException if there is an error reading the local files
 	 */
@@ -45,8 +46,8 @@ public class App {
 		frame.setSize(350, 250);
 
 		// Create two buttons
-		JButton button1 = new JButton("Visualize imported schedule");
-		JButton button2 = new JButton("Evaluate schedule qualitatively");
+		JButton button1 = new JButton("Visualize schedule");
+		JButton button2 = new JButton("Evaluate schedule");
 
 		// Create a panel with GridBagLayout to center the buttons with space between
 		// them
@@ -139,29 +140,39 @@ public class App {
 			}
 		});
 
-	
+		button2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 
-		ClassroomsInfo ci = ClassroomsInfo.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizacaoDasSalas.csv");
-		Schedule d = Schedule.createScheduleByLocalFile("D:\\Joao\\Downloads\\HorarioDeExemplo.csv");
+				ClassroomsInfo ci = ClassroomsInfo
+						.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
+				Schedule d = Schedule.createScheduleByLocalFile("C:\\Users\\Joao\\Downloads\\HorarioDeExemplo.csv");
 
-		List<Integer> overCapacity = new ArrayList<>();
-		List<Boolean> matchRequirements = new ArrayList<>();
-		List<Integer> featuresNotUsed = new ArrayList<>();
-		List<Boolean> classWithoutRoom = new ArrayList<>();
+				List<Integer> overCapacity = new ArrayList<>();
+				List<Boolean> matchRequirements = new ArrayList<>();
+				List<Integer> featuresNotUsed = new ArrayList<>();
+				List<Boolean> classWithoutRoom = new ArrayList<>();
 
-		analyse(d, ci, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
+				analyse(d, ci, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
+				openWebPage(HTMLFileCreator.createScheduleEvaluator(d, overCapacity, matchRequirements, featuresNotUsed,
+						classWithoutRoom));
+			}
+
+		});
+
 	}
 
 	/**
-	 * This method analyses the given schedule and classrooms information.
-	 * It checks for overcapacity, matches requirements, unused features, and classes without rooms.
-	 * The results are stored in the provided lists.
-	 * @param sc the schedule to be analysed
-	 * @param ci the classrooms information
-	 * @param overCapacity a list to store the overcapacity results
+	 * This method analyses the given schedule and classrooms information. It checks
+	 * for overcapacity, matches requirements, unused features, and classes without
+	 * rooms. The results are stored in the provided lists.
+	 * 
+	 * @param sc                the schedule to be analysed
+	 * @param ci                the classrooms information
+	 * @param overCapacity      a list to store the overcapacity results
 	 * @param matchRequirements a list to store the match requirements results
-	 * @param featuresNotUsed a list to store the unused features results
-	 * @param classWithoutRoom a list to store the classes without rooms results
+	 * @param featuresNotUsed   a list to store the unused features results
+	 * @param classWithoutRoom  a list to store the classes without rooms results
 	 */
 	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
 			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
@@ -199,12 +210,13 @@ public class App {
 			String feature = featureIterator.next();
 			if (remainingRequirements.remove(feature)) {
 				featureIterator.remove();
+				roomFeatures.clear();
+				roomFeatures.addAll(remainingFeatures);
+				return true;
+
 			}
 		}
-
-		roomFeatures.clear();
-		roomFeatures.addAll(remainingFeatures);
-		return remainingRequirements.isEmpty();
+		return false;
 	}
 
 	public static List<String> getRoomRequirements(LinkedHashMap<String, List<String>> scMap, int i) {
@@ -249,7 +261,7 @@ public class App {
 				input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
 				if (input != null) {
 					if (!input.isEmpty())
-						openWebPage(createHTMLFile(Schedule.createScheduleByLocalFile(input)));
+						openWebPage(HTMLFileCreator.createSchedule(Schedule.createScheduleByLocalFile(input)));
 				}
 				break;
 
@@ -257,7 +269,7 @@ public class App {
 				input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
 				if (input != null) {
 					if (!input.isEmpty())
-						openWebPage(createHTMLFile(Schedule.createScheduleByRemoteFile(input)));
+						openWebPage(HTMLFileCreator.createSchedule(Schedule.createScheduleByRemoteFile(input)));
 				}
 				break;
 
@@ -273,104 +285,16 @@ public class App {
 	public static void openWebPage(File htmlFile) {
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
+			Thread.sleep(5000);
+			if (htmlFile.delete())
+				System.out.println("HTML file deleted successfully!");
+			else
+				System.out.println("Failed to delete HTML file!");
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException x) {
+			x.printStackTrace();
 		}
 	}
 
-	// Create HTML file
-	/**
-	 * Creates an HTML file.
-	 * 
-	 * @param schedule The schedule to be written to the HTML file.
-	 * @return The created HTML file.
-	 * @throws IOException If an input or output exception occurred.
-	 */
-	public static File createHTMLFile(Schedule schedule) throws IOException {
-
-		String path = System.getProperty("user.home") + "\\Desktop\\SalasDeAulaPorTiposDeSala1.html";
-		File f = new File(path);
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("<!DOCTYPE html>\r\n" + "<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\r\n"
-				+ "	<head>\r\n" + "		<meta charset=\"utf-8\" />\r\n"
-				+ "		<link href=\"https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css\" rel=\"stylesheet\">\r\n"
-				+ "		<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js\"></script>\r\n"
-				+ "	</head>\r\n" + "	<body>\r\n" + "		<H1>Horário</H1>	\r\n"
-				+ "		<div id=\"example-table\"></div>\r\n" + "\r\n" + "		<script type=\"text/javascript\">\r\n"
-				+ "\r\n" + "			var tabledata = [\n");
-
-		for (int i = 0; i < schedule.getMap().get("Curso").size(); i++) {
-			String dayInfo = "{";
-			for (String key : schedule.getMap().keySet()) {
-				switch (key) {
-				case "Curso":
-					dayInfo += "course:\"";
-					break;
-				case "Unidade Curricular":
-					dayInfo += "curricularunit:\"";
-					break;
-				case "Turno":
-					dayInfo += "shift:\"";
-					break;
-				case "Turma":
-					dayInfo += "class:\"";
-					break;
-				case "Inscritos no turno":
-					dayInfo += "registeredonshift:\"";
-					break;
-				case "Dia da semana":
-					dayInfo += "weekday:\"";
-					break;
-				case "Hora início da aula":
-					dayInfo += "lessonstarttime:\"";
-					break;
-				case "Hora fim da aula":
-					dayInfo += "lessonendtime:\"";
-					break;
-				case "Data da aula":
-					dayInfo += "lessonday:\"";
-					break;
-				case "Características da sala pedida para a aula":
-					dayInfo += "classroomrequirements:\"";
-					break;
-				case "Sala atribuída à aula":
-					dayInfo += "classroomgiven:\"";
-					break;
-				}
-				dayInfo += schedule.getMap().get(key).get(i) + "\", ";
-			}
-			sb.append(dayInfo + "},\n");
-		}
-		sb.append("];\r\n" + "			\r\n" + "			var table = new Tabulator(\"#example-table\", {\r\n"
-				+ "				data:tabledata,\r\n" + "				layout:\"fitDatafill\",\r\n"
-				+ "				pagination:\"local\",\r\n" + "				paginationSize:10,\r\n"
-				+ "				paginationSizeSelector:[5, 10, 20, 40],\r\n"
-				+ "				movableColumns:true,\r\n" + "				paginationCounter:\"rows\",\r\n"
-				+ "				initialSort:[{column:\"building\",dir:\"asc\"},],\r\n" + "				columns:[\r\n"
-				+ "					{title:\"Curso\", field:\"course\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Unidade Curricular\", field:\"curricularunit\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Turno\", field:\"shift\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Turma\", field:\"class\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Inscritos no turno\", field:\"registeredonshift\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Dia da semana\", field:\"weekday\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Hora início da aula\", field:\"lessonstarttime\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Hora fim da aula\", field:\"lessonendtime\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Data da aula\", field:\"lessonday\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Características da sala pedida para a aula\", field:\"classroomrequirements\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Sala atribuída à aula\", field:\"classroomgiven\", headerFilter:\"input\"},\r\n"
-				+ "					\r\n" + "				],\r\n" + "			});\r\n" + "		</script>\r\n"
-				+ "		\r\n" + "	</body>\r\n" + "</html>\r\n");
-
-		// Write the HTML content to a file
-		try {
-			PrintWriter writer = new PrintWriter(f);
-			writer.println(sb.toString());
-			writer.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return f;
-	}
 }
