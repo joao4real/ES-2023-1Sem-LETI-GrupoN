@@ -26,8 +26,9 @@ import javax.swing.JTextField;
  */
 public class App {
 
-	private static Stack<JPanel> menuStack = new Stack<>();
 	private static JFrame frame;
+	private static Schedule schedule;
+	private static Stack<JPanel> menuStack = new Stack<>();
 
 	/**
 	 * The main method of the Schedule Analyser application. It creates a JFrame
@@ -40,140 +41,115 @@ public class App {
 	 */
 
 	public static void main(String[] args) throws IOException {
-
+		
 		frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
-
-		// Create two buttons
-		JButton button1 = new JButton("Visualize schedule");
-		JButton button2 = new JButton("Evaluate schedule");
-
-		// Create a panel with GridBagLayout to center the buttons with space between
-		// them
+		
 		JPanel panel = new JPanel(new GridBagLayout());
+		menuStack.add(panel);
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.PAGE_START;
 		c.insets = new Insets(10, 0, 10, 0);
-
-		panel.add(new JLabel("Please choose which option you would like to run"), c);
-
-		// Move to the next row
+		
+		panel.add(new JLabel("Select which way you want to import schedule:"),c);
+		
+		JButton localButton = new JButton("Local");
 		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
-
-		panel.add(button1, c);
-
-		// Move to the next row
+		c.anchor = GridBagConstraints.CENTER; 
+		panel.add(localButton, c);
+		
+		JButton remoteButton = new JButton("Remote");
 		c.gridy = 2;
 		c.anchor = GridBagConstraints.PAGE_END;
-
-		panel.add(button2, c);
-
-		// Set the panel as the content pane of the frame
-		menuStack.push(panel);
-		frame.setContentPane(panel);
-
-		// Set frame properties
-		frame.setLocationRelativeTo(null); // Center the frame on the screen
+		panel.add(remoteButton, c);
+		 
+		frame.add(panel);
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-
-		button1.addActionListener(new ActionListener() {
+		
+		localButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				JPanel panel = new JPanel(new GridBagLayout());
-				GridBagConstraints c = new GridBagConstraints();
-
-				c.gridx = 0;
-				c.gridy = 0;
-				c.anchor = GridBagConstraints.PAGE_START;
-				c.insets = new Insets(10, 0, 10, 0);
-
-				panel.add(new JLabel("Do you want to run local or remote file?"), c);
-
-				JButton button3 = new JButton("Local");
-				JButton button4 = new JButton("Remote");
-				JButton button5 = new JButton("Back");
-
-				// Add Local button
-				c.gridy = 1;
-				c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
-				panel.add(button3, c);
-
-				// Add Remote button
-				c.gridy = 2;
-				panel.add(button4, c);
-
-				// Add Back button
-				c.gridy = 3;
-				c.anchor = GridBagConstraints.LAST_LINE_END;
-				panel.add(button5, c);
-				menuStack.push(panel);
-
-				button3.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						openSchedule("l", frame, panel);
-					}
-				});
-
-				button4.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						openSchedule("r", frame, panel);
-					}
-				});
-
-				button5.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						frame.setContentPane(menuStack.get(0));
-					}
-				});
-
-				// Set the panel as the content pane of the frame
-				frame.setContentPane(panel);
-				frame.setVisible(true);
+				schedule = getSchedule("l",frame, panel);
+				showOptions();	
+				
 			}
 		});
 
-		button2.addActionListener(new ActionListener() {
+		remoteButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				ClassroomsInfo ci = ClassroomsInfo
-						.createClassroomsInfoByLocalFile("C:\\Users\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
-				Schedule d = Schedule.createScheduleByLocalFile("C:\\Users\\Joao\\Downloads\\HorarioDeExemplo.csv");
-
-				List<Integer> overCapacity = new ArrayList<>();
-				List<Boolean> matchRequirements = new ArrayList<>();
-				List<Integer> featuresNotUsed = new ArrayList<>();
-				List<Boolean> classWithoutRoom = new ArrayList<>();
-
-				analyse(d, ci, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
-				openWebPage(HTMLFileCreator.createScheduleEvaluator(d, overCapacity, matchRequirements, featuresNotUsed,
-						classWithoutRoom));
+			public void actionPerformed(ActionEvent event) {
+				schedule = getSchedule("r",frame,panel);
+				showOptions();
+				
 			}
-
 		});
 
+		
 	}
 
-	/**
-	 * This method analyses the given schedule and classrooms information. It checks
-	 * for overcapacity, matches requirements, unused features, and classes without
-	 * rooms. The results are stored in the provided lists.
-	 * 
-	 * @param sc                the schedule to be analysed
-	 * @param ci                the classrooms information
-	 * @param overCapacity      a list to store the overcapacity results
-	 * @param matchRequirements a list to store the match requirements results
-	 * @param featuresNotUsed   a list to store the unused features results
-	 * @param classWithoutRoom  a list to store the classes without rooms results
-	 */
+	public static void showOptions() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
+		JButton backButton = new JButton("Back");
+		JButton showScheduleButton = new JButton("Show Schedule");
+		JButton evaluateScheduleButton = new JButton("Evaluate Schedule");
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.PAGE_START;
+		c.insets = new Insets(10, 0, 10, 0);
+
+		panel.add(new JLabel("Select what do you want to do with the schedule:"), c);
+
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
+		panel.add(showScheduleButton, c);
+
+		c.gridy = 2;
+		panel.add(evaluateScheduleButton, c);
+
+		c.gridy = 3;
+		c.anchor = GridBagConstraints.LAST_LINE_END;
+		panel.add(backButton, c);
+
+		frame.setContentPane(menuStack.push(panel));
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				frame.setContentPane(menuStack.get(0));
+			}
+		});
+		
+		evaluateScheduleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event){
+					try {
+						openWebPage(HTMLFileCreator.createSchedule(schedule));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
+		});
+		
+		showScheduleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				
+			}
+		});
+		
+		
+	}
+
 	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
 			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
 
@@ -249,43 +225,31 @@ public class App {
 				- Integer.parseInt(ciMap.get("Capacidade Normal").get(index)), 0) : 0;
 	}
 
-	private static void openSchedule(String option, JFrame frame, JPanel panel) {
+	private static Schedule getSchedule(String option, JFrame frame, JPanel panel) {
 
 		panel.add(new JTextField(5));
 		String input;
 
-		try {
-			switch (option) {
+		switch (option) {
 
-			case "l":
-				input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
-				if (input != null) {
-					if (!input.isEmpty())
-						openWebPage(HTMLFileCreator.createSchedule(Schedule.createScheduleByLocalFile(input)));
-				}
-				break;
-
-			case "r":
-				input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
-				if (input != null) {
-					if (!input.isEmpty())
-						openWebPage(HTMLFileCreator.createSchedule(Schedule.createScheduleByRemoteFile(input)));
-				}
-				break;
-
-			default:
-				System.err.println("Invalid Option");
-				return;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		case "l":
+			input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
+			if (input != null && !input.isEmpty())
+				return Schedule.createScheduleByLocalFile(input);
+		case "r":
+			input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
+			if (input != null && !input.isEmpty())
+				return Schedule.createScheduleByRemoteFile(input);
+		default:
+			System.err.println("Invalid Option");
+			return null;
 		}
 	}
 
 	public static void openWebPage(File htmlFile) {
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
-			Thread.sleep(5000);
+			Thread.sleep(500);
 			if (htmlFile.delete())
 				System.out.println("HTML file deleted successfully!");
 			else
