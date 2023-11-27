@@ -1,5 +1,6 @@
 package ES_23_24_1sem.LETI.Grupo_N;
 
+import java.awt.CardLayout;
 import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,13 +14,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Stack;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
  * Main class of the application.
@@ -28,71 +27,74 @@ public class App {
 
 	private static JFrame frame;
 	private static Schedule schedule;
-	private static Stack<JPanel> menuStack = new Stack<>();
-
-	/**
-	 * The main method of the Schedule Analyser application. It creates a JFrame
-	 * with two buttons for visualizing an imported schedule and evaluating a
-	 * schedule qualitatively. It also sets up action listeners for the buttons to
-	 * handle user interactions.
-	 * 
-	 * @param args command-line arguments (not used)
-	 * @throws IOException if there is an error reading the local files
-	 */
 
 	public static void main(String[] args) throws IOException {
-		
+
 		frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
-		
+
+		JPanel cardPanel = new JPanel(new CardLayout());
+
+		JPanel importPanel = createImportPanel(cardPanel);
+		JPanel optionsPanel = createOptionsPanel(cardPanel);
+		JPanel evaluatePanel = createEvaluatePanel(cardPanel);
+
+		cardPanel.add(importPanel, "IMPORT_PANEL");
+		cardPanel.add(optionsPanel, "OPTIONS_PANEL");
+		cardPanel.add(evaluatePanel, "EVALUATE_PANEL");
+
+		CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
+		cardLayout.show(cardPanel, "IMPORT_PANEL");
+
+		frame.add(cardPanel);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
+
+	private static JPanel createImportPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
-		menuStack.add(panel);
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.PAGE_START;
 		c.insets = new Insets(10, 0, 10, 0);
-		
-		panel.add(new JLabel("Select which way you want to import schedule:"),c);
-		
+
+		panel.add(new JLabel("Select which way you want to import schedule:"), c);
+
 		JButton localButton = new JButton("Local");
 		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER; 
+		c.anchor = GridBagConstraints.CENTER;
 		panel.add(localButton, c);
-		
+
 		JButton remoteButton = new JButton("Remote");
 		c.gridy = 2;
 		c.anchor = GridBagConstraints.PAGE_END;
 		panel.add(remoteButton, c);
-		 
-		frame.add(panel);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		
+
 		localButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				schedule = getSchedule("l",frame, panel);
-				showOptions();	
-				
+				schedule = getSchedule("l");
+				if (schedule != null)
+					((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
 			}
 		});
 
 		remoteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				schedule = getSchedule("r",frame,panel);
-				showOptions();
-				
+				schedule = getSchedule("r");
+				if (schedule != null)
+					((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
 			}
 		});
 
-		
+		return panel;
 	}
 
-	public static void showOptions() {
+	private static JPanel createOptionsPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -108,7 +110,7 @@ public class App {
 		panel.add(new JLabel("Select what do you want to do with the schedule:"), c);
 
 		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER; // Set anchor to CENTER for the buttons
+		c.anchor = GridBagConstraints.CENTER;
 		panel.add(showScheduleButton, c);
 
 		c.gridy = 2;
@@ -118,36 +120,88 @@ public class App {
 		c.anchor = GridBagConstraints.LAST_LINE_END;
 		panel.add(backButton, c);
 
-		frame.setContentPane(menuStack.push(panel));
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "IMPORT_PANEL");
+			}
+		});
+
+		evaluateScheduleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
+			}
+		});
+
+		showScheduleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				try {
+					openWebPage(HTMLFileCreator.createSchedule(schedule));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		return panel;
+	}
+
+	private static JPanel createEvaluatePanel(JPanel cardPanel) {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
+		JButton backButton = new JButton("Back");
+		JButton evaluateWithDefaultMetricsButton = new JButton("Evaluate with default metrics");
+		JButton evaluateWithCustomMetricsButton = new JButton("Evaluate with custom metrics");
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.PAGE_START;
+		c.insets = new Insets(10, 0, 10, 0);
+
+		panel.add(new JLabel("Select which way you want to evaluate the schedule:"), c);
+
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.CENTER;
+		panel.add(evaluateWithDefaultMetricsButton, c);
+
+		c.gridy = 2;
+		panel.add(evaluateWithCustomMetricsButton, c);
+
+		c.gridy = 3;
+		c.anchor = GridBagConstraints.LAST_LINE_END;
+		panel.add(backButton, c);
 
 		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				frame.setContentPane(menuStack.get(0));
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
 			}
 		});
-		
-		evaluateScheduleButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event){
-					try {
-						openWebPage(HTMLFileCreator.createSchedule(schedule));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			}
-		});
-		
-		showScheduleButton.addActionListener(new ActionListener() {
+
+		evaluateWithDefaultMetricsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				
+
+				List<Integer> overCapacity = new ArrayList<>();
+				List<Boolean> matchRequirements = new ArrayList<>();
+				List<Integer> featuresNotUsed = new ArrayList<>();
+				List<Boolean> classWithoutRoom = new ArrayList<>();
+
+				openWebPage(HTMLFileCreator.createScheduleEvaluator(schedule, overCapacity, matchRequirements,
+						featuresNotUsed, classWithoutRoom));
 			}
 		});
-		
-		
+
+		evaluateWithCustomMetricsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				// TODO
+			}
+		});
+		return panel;
 	}
 
 	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
@@ -225,21 +279,24 @@ public class App {
 				- Integer.parseInt(ciMap.get("Capacidade Normal").get(index)), 0) : 0;
 	}
 
-	private static Schedule getSchedule(String option, JFrame frame, JPanel panel) {
-
-		panel.add(new JTextField(5));
+	private static Schedule getSchedule(String option) {
 		String input;
 
 		switch (option) {
-
 		case "l":
 			input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
-			if (input != null && !input.isEmpty())
+			if (input != null && !input.isEmpty()) {
 				return Schedule.createScheduleByLocalFile(input);
+			} else {
+				return null;
+			}
 		case "r":
 			input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
-			if (input != null && !input.isEmpty())
+			if (input != null && !input.isEmpty()) {
 				return Schedule.createScheduleByRemoteFile(input);
+			} else {
+				return null;
+			}
 		default:
 			System.err.println("Invalid Option");
 			return null;
