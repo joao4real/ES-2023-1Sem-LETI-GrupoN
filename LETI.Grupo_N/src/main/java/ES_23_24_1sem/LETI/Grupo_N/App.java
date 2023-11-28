@@ -27,6 +27,7 @@ public class App {
 
 	private static JFrame frame;
 	private static Schedule schedule;
+	private static ClassroomsInfo database;
 
 	public static void main(String[] args) throws IOException {
 
@@ -39,10 +40,12 @@ public class App {
 		JPanel importPanel = createImportPanel(cardPanel);
 		JPanel optionsPanel = createOptionsPanel(cardPanel);
 		JPanel evaluatePanel = createEvaluatePanel(cardPanel);
+		JPanel customMetricsPanel = createCustomMetricsPanel(cardPanel);
 
 		cardPanel.add(importPanel, "IMPORT_PANEL");
 		cardPanel.add(optionsPanel, "OPTIONS_PANEL");
 		cardPanel.add(evaluatePanel, "EVALUATE_PANEL");
+		cardPanel.add(customMetricsPanel, "CUSTOM_PANEL");
 
 		CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 		cardLayout.show(cardPanel, "IMPORT_PANEL");
@@ -189,7 +192,10 @@ public class App {
 				List<Boolean> matchRequirements = new ArrayList<>();
 				List<Integer> featuresNotUsed = new ArrayList<>();
 				List<Boolean> classWithoutRoom = new ArrayList<>();
+				
+				database = ClassroomsInfo.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
 
+				analyse(schedule, database, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
 				openWebPage(HTMLFileCreator.createScheduleEvaluator(schedule, overCapacity, matchRequirements,
 						featuresNotUsed, classWithoutRoom));
 			}
@@ -203,7 +209,42 @@ public class App {
 		});
 		return panel;
 	}
+	
+	private static JPanel createCustomMetricsPanel(JPanel cardPanel) {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 
+		JButton backButton = new JButton("Back");
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.PAGE_START;
+		c.insets = new Insets(10, 0, 10, 0);
+
+		panel.add(new JLabel("Make your own metrics with the following fields:"), c);
+
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.CENTER;
+		
+		panel.add(
+
+		c.gridy = ;
+		c.anchor = GridBagConstraints.LAST_LINE_END;
+		panel.add(backButton, c);
+
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
+			}
+		});
+
+		
+			}
+		});
+		return panel;
+	}
+	
 	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
 			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
 
@@ -317,5 +358,4 @@ public class App {
 			x.printStackTrace();
 		}
 	}
-
 }
