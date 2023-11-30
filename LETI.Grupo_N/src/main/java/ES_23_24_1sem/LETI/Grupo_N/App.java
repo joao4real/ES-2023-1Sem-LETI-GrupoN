@@ -34,6 +34,8 @@ public class App {
 		frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
+		
+		database = ClassroomsInfo.createClassroomsInfoByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/CaracterizacaoSalas.csv");
 
 		JPanel cardPanel = new JPanel(new CardLayout());
 
@@ -80,7 +82,7 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				schedule = getSchedule("l");
-				if (schedule != null)
+				if (getSchedule() != null)
 					((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
 			}
 		});
@@ -89,7 +91,7 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				schedule = getSchedule("r");
-				if (schedule != null)
+				if (getSchedule() != null)
 					((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
 			}
 		});
@@ -141,7 +143,7 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
-					openWebPage(HTMLFileCreator.createSchedule(schedule));
+					openWebPage(HTMLFileCreator.createSchedule(getSchedule()));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -195,8 +197,8 @@ public class App {
 				
 				database = ClassroomsInfo.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
 
-				analyse(schedule, database, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
-				openWebPage(HTMLFileCreator.createScheduleEvaluator(schedule, overCapacity, matchRequirements,
+				analyse(getSchedule(), getDatabase(), overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
+				openWebPage(HTMLFileCreator.createScheduleEvaluator(getSchedule(), overCapacity, matchRequirements,
 						featuresNotUsed, classWithoutRoom));
 			}
 		});
@@ -204,7 +206,7 @@ public class App {
 		evaluateWithCustomMetricsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				// TODO
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "CUSTOM_PANEL");
 			}
 		});
 		return panel;
@@ -223,12 +225,19 @@ public class App {
 
 		panel.add(new JLabel("Make your own metrics with the following fields:"), c);
 
+		JButton makeQuery = new JButton("Make query");
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.CENTER;
+		panel.add(makeQuery);
 		
-		panel.add(
+		makeQuery.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				new Calculator(schedule, database);
+			}
+		});
 
-		c.gridy = ;
+		c.gridy = 2;
 		c.anchor = GridBagConstraints.LAST_LINE_END;
 		panel.add(backButton, c);
 
@@ -239,9 +248,7 @@ public class App {
 			}
 		});
 
-		
-			}
-		});
+	
 		return panel;
 	}
 	
@@ -357,5 +364,13 @@ public class App {
 		} catch (InterruptedException x) {
 			x.printStackTrace();
 		}
+	}
+
+	public static Schedule getSchedule() {
+		return schedule;
+	}
+
+	public static ClassroomsInfo getDatabase() {
+		return database;
 	}
 }
