@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,7 +22,7 @@ public class AppTest {
     @Test
     public void testCreateHTMLFile() throws IOException {
     	Schedule schedule = Schedule.createScheduleByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
-        File htmlFile = App.createHTMLFile(schedule);
+        File htmlFile = HTMLFileCreator.createSchedule(schedule);
         assertNotNull(htmlFile);
         assertTrue(htmlFile.exists());
         assertTrue(htmlFile.isFile());
