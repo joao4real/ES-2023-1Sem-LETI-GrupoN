@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,19 +12,22 @@ public class Calculadora extends JFrame {
 
     private static final Dimension COMBO_BOX_SIZE = new Dimension(30, 25);
     private JPanel comboBoxPanel;  // Panel to hold combo boxes
+    
+    private List<JComboBox<String>> boxes;
     private JComboBox<String> comboBoxCampos;
     private JComboBox<String> comboBoxOperadores;
     private JTextField resultadoField;
-
+    private List<String> operadoresStringArray = Arrays.asList("+", "-", "*", "/");
     private String[] campos = {"Inscritos no turno", "Características da sala pedida para a aula", "Características da sala atribuída",
             "Numero características", "Capacidade normal", "Capacidade exame"};
 
     private String[] operadoresGerais = {"+", "-", "*", "/", "<", ">", ">=", "<=", "!=", "="};
-    private List<String> operadoresStringArray = Arrays.asList("+", "-", "*", "/");
-
+    private int boxCounter = 3;
     private int tipoCampoSelecionado;
+    
 
     public Calculadora() {
+    	boxes = new ArrayList<>();
         setTitle("Calculadora de Campos");
         setSize(800, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,8 +38,9 @@ public class Calculadora extends JFrame {
         // Create a panel for combo boxes and add it to the left
         comboBoxPanel = new JPanel();
         comboBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Left-align combo boxes
-        comboBoxCampos = createComboBox(campos);
-        comboBoxOperadores = createComboBox(operadoresGerais);
+        comboBoxCampos = createComboBox(campos,boxes);
+        comboBoxOperadores = createComboBox(operadoresGerais,boxes);
+        
         comboBoxPanel.add(comboBoxCampos);
         comboBoxPanel.add(comboBoxOperadores);
         add(comboBoxPanel, BorderLayout.LINE_START); // Add combo box panel to the left
@@ -69,26 +74,41 @@ public class Calculadora extends JFrame {
     }
 
     private void addComboBox() {
-        // Create a new combo box and add it to the left of existing combo boxes
-        JComboBox<String> newComboBox = createComboBox(operadoresGerais);
+    	JComboBox<String> newComboBox;
+    	if(boxCounter % 2 == 0)
+    		newComboBox = createComboBox(operadoresGerais, boxes);
+    	else
+    		newComboBox = createComboBox(campos, boxes);
+    	boxCounter++;
         comboBoxPanel.add(newComboBox);
+        atualizarComboBoxOperadores();
         revalidate();  // Update the layout
         repaint();
     }
 
-    private void calcular() {
-        String campo1 = (String) comboBoxCampos.getSelectedItem();
-        String operador = (String) comboBoxOperadores.getSelectedItem();
+    private void atualizarComboBoxOperadores() {
+        comboBoxOperadores.removeAllItems();
 
-        // Implement logic for calculations
-
-        resultadoField.setText("Resultado da operação");
+        for (String operador : operadoresGerais) {
+            if (!operadoresStringArray.contains(operador) || tipoCampoSelecionado != 1) {
+                comboBoxOperadores.addItem(operador);
+            }
+        }
+    }
+    
+	private void calcular() {
+        String expression = "";
+        Object[] options = {"Yes, Evaluate","Cancel"};
+        for(JComboBox<String> box : boxes)
+        	expression += box.getSelectedItem() +  " ";
+        JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression,"Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
     }
 
-    private static <T> JComboBox<T> createComboBox(T[] items) {
+    private static <T> JComboBox<T> createComboBox(T[] items, List<JComboBox<T>> boxes) {
         JComboBox<T> comboBox = new JComboBox<>(items);
         comboBox.setMaximumSize(COMBO_BOX_SIZE);
         comboBox.setEditable(false);
+        boxes.add(comboBox);
         return comboBox;
     }
 
