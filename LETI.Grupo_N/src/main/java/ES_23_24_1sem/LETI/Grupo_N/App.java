@@ -197,7 +197,7 @@ public class App {
 				
 				database = ClassroomsInfo.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
 
-				analyse(getSchedule(), getDatabase(), overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
+				analyse(getSchedule(), database, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
 				openWebPage(HTMLFileCreator.createScheduleEvaluator(getSchedule(), overCapacity, matchRequirements,
 						featuresNotUsed, classWithoutRoom));
 			}
