@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 /**
@@ -13,11 +15,11 @@ import java.util.Scanner;
  */
 public class Schedule extends HashData {
 
-	/**
-	 * Default constructor for the Schedule class.
-	 */
-	public Schedule() {
+	private LinkedHashMap<String,String> mapping = new LinkedHashMap<>();
+
+	public Schedule	(LinkedHashMap<String,String> mapping) {
 		super();
+		this.mapping = mapping;
 	}
 
 	/**
@@ -68,5 +70,14 @@ public class Schedule extends HashData {
 		}
 
 		return schedule;
+	}
+	@Override
+	public void readFile(Scanner sc) {
+		super.readFile(sc);
+	
+		
+
+		while (sc.hasNextLine())
+			super.addInfoByLine(sc.nextLine());
 	}
 }

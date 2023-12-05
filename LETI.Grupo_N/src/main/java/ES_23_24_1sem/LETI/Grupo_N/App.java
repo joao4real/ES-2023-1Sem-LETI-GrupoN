@@ -233,7 +233,6 @@ public class App {
 		makeQuery.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new Calculator(schedule, database);
 			}
 		});
 

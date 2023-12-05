@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -17,7 +18,7 @@ public class ClassroomsInfo extends HashData {
 	/**
 	 * Default constructor for the ClassroomsInfo class.
 	 */
-	
+
 	public ClassroomsInfo() {
 		super();
 	}
@@ -70,5 +71,15 @@ public class ClassroomsInfo extends HashData {
 		}
 
 		return classroomsInfo;
+	}
+
+	@Override
+	public void readFile(Scanner sc) {
+		super.readFile(sc);
+		for (int i = 0; i < getMapSize(); i++)
+			super.getMap().put(super.getLabels()[i], new ArrayList<String>());
+
+		while (sc.hasNextLine())
+			super.addInfoByLine(sc.nextLine());
 	}
 }
