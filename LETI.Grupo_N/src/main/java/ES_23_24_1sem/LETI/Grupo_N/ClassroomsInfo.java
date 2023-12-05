@@ -71,15 +71,5 @@ public class ClassroomsInfo extends HashData {
 		}
 
 		return classroomsInfo;
-	}
-
-	@Override
-	public void readFile(Scanner sc) {
-		super.readFile(sc);
-		for (int i = 0; i < getMapSize(); i++)
-			super.getMap().put(super.getLabels()[i], new ArrayList<String>());
-
-		while (sc.hasNextLine())
-			super.addInfoByLine(sc.nextLine());
-	}
+	}	
 }
