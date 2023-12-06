@@ -2,12 +2,14 @@ package ES_23_24_1sem.LETI.Grupo_N;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.io.File;
-import java.security.KeyStore.Entry;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class Schedule extends HashData {
 		try {
 			Scanner sc = new Scanner(new File(path));
 			schedule.readFile(sc);
-		} catch (java.io.FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return schedule;
@@ -33,13 +35,13 @@ public class Schedule extends HashData {
 	public static Schedule createScheduleByRemoteFile(String urlStr) {
 		Schedule schedule = new Schedule();
 		try {
-			java.io.InputStream in = new java.net.URL(urlStr).openStream();
+			InputStream in = new URL(urlStr).openStream();
 			schedule.readFile(new Scanner(in));
 			in.close();
-		} catch (java.net.MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			System.err.println("Invalid URL: " + urlStr);
 			e.printStackTrace();
-		} catch (java.io.IOException e) {
+		} catch (IOException e) {
 			System.err.println("Failed to open the remote file: " + urlStr);
 			e.printStackTrace();
 		}
@@ -52,11 +54,12 @@ public class Schedule extends HashData {
 		JPanel panel = createMappingPanel();
 		if (showMappingDialog(panel) == JOptionPane.OK_OPTION)
 			updateFieldMapping(panel);
+		else
+			return;
 		changeKeys();
 	}
 
 	private JPanel createMappingPanel() {
-		String[] csvHeaders = getLabels();
 		JPanel panel = new JPanel(new GridLayout(0, 2));
 
 		for (String variable : getVariables()) {
@@ -94,25 +97,18 @@ public class Schedule extends HashData {
 	}
 
 	public void changeKeys() {
-	   LinkedHashMap<String, List<String>> dataMap = this.getMap();
-	    LinkedHashMap<String, List<String>> newDataMap = new LinkedHashMap<>();
+		LinkedHashMap<String, List<String>> dataMap = getMap();
+		LinkedHashMap<String, List<String>> newDataMap = new LinkedHashMap<>();
 
-	    for (Map.Entry<String, String> entry : fieldMapping.entrySet()) {
-	        String newKey = entry.getKey();
-	        String oldKey = entry.getValue();
+		for (Map.Entry<String, String> entry : fieldMapping.entrySet()) {
+			String newKey = entry.getKey();
+			String oldKey = entry.getValue();
 
-	        if (dataMap.containsKey(oldKey)) {
-	            newDataMap.put(newKey, dataMap.get(oldKey));
-	        }
-	    }
-
-	    // Replace the original dataMap with the newDataMap
-	    this.setMap(newDataMap);
-
-	    // Print the modified map
-	    for (String key : this.getMap().keySet()) {
-	        System.out.println(key + this.getMap().get(key));
-	    }
+			if (dataMap.containsKey(oldKey)) {
+				newDataMap.put(newKey, dataMap.get(oldKey));
+			}
+		}
+		setMap(newDataMap);
+		setLabels(getVariables());
 	}
-
 }

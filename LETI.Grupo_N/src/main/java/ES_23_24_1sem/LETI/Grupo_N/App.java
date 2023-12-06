@@ -135,7 +135,7 @@ public class App {
 		evaluateScheduleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
+				new UserMetricsAnalyser(schedule.getLabels(), database.getLabels());
 			}
 		});
 
@@ -194,8 +194,6 @@ public class App {
 				List<Boolean> matchRequirements = new ArrayList<>();
 				List<Integer> featuresNotUsed = new ArrayList<>();
 				List<Boolean> classWithoutRoom = new ArrayList<>();
-				
-				database = ClassroomsInfo.createClassroomsInfoByLocalFile("D:\\Joao\\Downloads\\CaracterizaçãoDasSalas.csv");
 
 				analyse(getSchedule(), database, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
 				openWebPage(HTMLFileCreator.createScheduleEvaluator(getSchedule(), overCapacity, matchRequirements,

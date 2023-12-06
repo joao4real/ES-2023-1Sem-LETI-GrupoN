@@ -55,7 +55,7 @@ public abstract class HashData {
 	 */
 	public void readFile(Scanner sc) {
 		String line = sc.nextLine();
-		this.labels = line.split(";");
+		this.setLabels(line.split(";"));
 
 		for (int i = 0; i < getMapSize(); i++)
 			map.put(labels[i], new ArrayList<String>());
@@ -73,6 +73,10 @@ public abstract class HashData {
 		return map;
 	}
 
+	public void setMap(LinkedHashMap<String, List<String>> map) {
+		this.map = map;
+	}
+	
 	public int getMapSize() {
 		return labels.length;
 	}
@@ -81,7 +85,7 @@ public abstract class HashData {
 		return labels;
 	}
 
-	public void setMap(LinkedHashMap<String, List<String>> map) {
-		this.map = map;
+	public void setLabels(String[] labels) {
+		this.labels = labels;
 	}
 }
