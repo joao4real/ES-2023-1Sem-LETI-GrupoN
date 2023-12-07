@@ -16,13 +16,11 @@ public class UserMetricsAnalyser extends JFrame {
 	private static final Dimension COMBO_BOX_SIZE = new Dimension(30, 25);
 	private JPanel comboBoxPanel; // Panel to hold combo boxes
 
-	private List<JComboBox<String>> boxes;
-	private JComboBox<String> comboBoxCampos;
-	private JComboBox<String> comboBoxOperadores;
+	private List<JComboBox<String>> boxes = new ArrayList<>();
 	private JTextField resultadoField;
 	private String[] fields;
-	private String[] operadoresGerais = { "+", "-", "*", "/", "<", ">", ">=", "<=", "!=", "=" };
-	private int boxCounter = 3;
+	private String[] operadoresGerais = {"--", "+", "-", "*", "/", "<", ">", ">=", "<=", "!=", "=" };
+	private int boxCounter = 0;
 	private String expression;
 
 	private boolean allowToCreate = true;
@@ -30,8 +28,7 @@ public class UserMetricsAnalyser extends JFrame {
 	public UserMetricsAnalyser(String[] scheduleFields, String[] databaseFields) {
 
 		fields = getFields(scheduleFields, databaseFields);
-		boxes = new ArrayList<>();
-		setTitle("Calculadora de Campos");
+		setTitle("Schedule Evaluator");
 		setSize(800, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -41,11 +38,6 @@ public class UserMetricsAnalyser extends JFrame {
 		// Create a panel for combo boxes and add it to the left
 		comboBoxPanel = new JPanel();
 		comboBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Left-align combo boxes
-		comboBoxCampos = createComboBox(fields, boxes);
-		comboBoxOperadores = createComboBox(operadoresGerais, boxes);
-
-		comboBoxPanel.add(comboBoxCampos);
-		comboBoxPanel.add(comboBoxOperadores);
 		add(comboBoxPanel, BorderLayout.LINE_START); // Add combo box panel to the left
 
 		// Create a panel for buttons and add it to the right
@@ -62,9 +54,18 @@ public class UserMetricsAnalyser extends JFrame {
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (allowToCreate)
-					addComboBox();
-				else {
+				if (allowToCreate) {
+					if (!boxes.isEmpty()) {
+						if (boxes.get(boxes.size() - 1).getSelectedItem().equals("--")) {
+							return;
+						} else {
+							System.out.println(boxes.get(boxes.size() - 1).getSelectedItem());
+							addComboBox();
+						}
+					} else {
+						addComboBox();
+					}
+				} else {
 					expression += scanInteger(resultadoField.getText());
 					resultadoField = new JTextField();
 					add(resultadoField, BorderLayout.CENTER);
@@ -78,28 +79,31 @@ public class UserMetricsAnalyser extends JFrame {
 	}
 
 	private String[] getFields(String[] scheduleFields, String[] databaseFields) {
-		String[] fields = new String[scheduleFields.length + databaseFields.length];
+		String[] fields = new String[scheduleFields.length + databaseFields.length + 1];
+		fields[0] = "--";
 
-		for (int i = 0; i < scheduleFields.length; i++)
-			fields[i] = scheduleFields[i];
+		for (int i = 1; i < scheduleFields.length + 1; i++)
+			fields[i] = scheduleFields[i - 1];
 
-		for (int j = scheduleFields.length; j < fields.length; j++)
-			fields[j] = databaseFields[j - scheduleFields.length];
+		for (int j = scheduleFields.length + 1; j < fields.length; j++)
+			fields[j] = databaseFields[j - (scheduleFields.length + 1)];
 
 		return fields;
 	}
 
 	private void addComboBox() {
 		JComboBox<String> newComboBox;
-		if (boxCounter % 2 == 0)
+
+		if (boxCounter % 2 != 0)
 			newComboBox = createComboBox(operadoresGerais, boxes);
 		else
 			newComboBox = createComboBox(fields, boxes);
+
 		boxCounter++;
 		comboBoxPanel.add(newComboBox);
-//        atualizarComboBoxOperadores();
 		revalidate(); // Update the layout
 		repaint();
+
 	}
 
 //  private void atualizarComboBoxOperadores() {
@@ -128,7 +132,7 @@ public class UserMetricsAnalyser extends JFrame {
 			expression += item + "  ";
 			if (isEquationElement(item))
 				System.out.println("PASSEI POR AQUI");
-				allowToCreate = false;
+			allowToCreate = false;
 		}
 		return expression;
 	}
