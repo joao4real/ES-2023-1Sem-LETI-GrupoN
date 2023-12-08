@@ -9,11 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,13 +36,9 @@ public class App {
 
 		JPanel importPanel = createImportPanel(cardPanel);
 		JPanel optionsPanel = createOptionsPanel(cardPanel);
-		JPanel evaluatePanel = createEvaluatePanel(cardPanel);
-		JPanel customMetricsPanel = createCustomMetricsPanel(cardPanel);
 
 		cardPanel.add(importPanel, "IMPORT_PANEL");
 		cardPanel.add(optionsPanel, "OPTIONS_PANEL");
-		cardPanel.add(evaluatePanel, "EVALUATE_PANEL");
-		cardPanel.add(customMetricsPanel, "CUSTOM_PANEL");
 
 		CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 		cardLayout.show(cardPanel, "IMPORT_PANEL");
@@ -136,7 +127,6 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				new UserMetricsAnalyser(schedule.getMap(), database.getMap());
-				//((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
 			}
 		});
 
@@ -152,177 +142,6 @@ public class App {
 		});
 
 		return panel;
-	}
-
-	private static JPanel createEvaluatePanel(JPanel cardPanel) {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		JButton backButton = new JButton("Back");
-		JButton evaluateWithDefaultMetricsButton = new JButton("Evaluate with default metrics");
-		JButton evaluateWithCustomMetricsButton = new JButton("Evaluate with custom metrics");
-
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.insets = new Insets(10, 0, 10, 0);
-
-		panel.add(new JLabel("Select which way you want to evaluate the schedule:"), c);
-
-		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER;
-		panel.add(evaluateWithDefaultMetricsButton, c);
-
-		c.gridy = 2;
-		panel.add(evaluateWithCustomMetricsButton, c);
-
-		c.gridy = 3;
-		c.anchor = GridBagConstraints.LAST_LINE_END;
-		panel.add(backButton, c);
-
-		backButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				((CardLayout) cardPanel.getLayout()).show(cardPanel, "OPTIONS_PANEL");
-			}
-		});
-
-		evaluateWithDefaultMetricsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-
-				List<Integer> overCapacity = new ArrayList<>();
-				List<Boolean> matchRequirements = new ArrayList<>();
-				List<Integer> featuresNotUsed = new ArrayList<>();
-				List<Boolean> classWithoutRoom = new ArrayList<>();
-
-				analyse(getSchedule(), database, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
-				openWebPage(HTMLFileCreator.createScheduleEvaluator(getSchedule(), overCapacity, matchRequirements,
-						featuresNotUsed, classWithoutRoom));
-			}
-		});
-
-		evaluateWithCustomMetricsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				((CardLayout) cardPanel.getLayout()).show(cardPanel, "CUSTOM_PANEL");
-			}
-		});
-		return panel;
-	}
-	
-	private static JPanel createCustomMetricsPanel(JPanel cardPanel) {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		JButton backButton = new JButton("Back");
-
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.insets = new Insets(10, 0, 10, 0);
-
-		panel.add(new JLabel("Make your own metrics with the following fields:"), c);
-
-		JButton makeQuery = new JButton("Make query");
-		c.gridy = 1;
-		c.anchor = GridBagConstraints.CENTER;
-		panel.add(makeQuery);
-		
-		makeQuery.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-			}
-		});
-
-		c.gridy = 2;
-		c.anchor = GridBagConstraints.LAST_LINE_END;
-		panel.add(backButton, c);
-
-		backButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
-			}
-		});
-
-	
-		return panel;
-	}
-	
-	public static void analyse(Schedule sc, ClassroomsInfo ci, List<Integer> overCapacity,
-			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
-
-		LinkedHashMap<String, List<String>> scMap = sc.getMap();
-		LinkedHashMap<String, List<String>> ciMap = ci.getMap();
-
-		for (int i = 0; i < scMap.get("Sala atribuída à aula").size(); i++) {
-
-			String givenRoom = scMap.get("Sala atribuída à aula").get(i);
-			List<String> roomReqs = getRoomRequirements(scMap, i);
-			List<String> roomFeats = getRoomFeatures(ciMap, givenRoom);
-
-			overCapacity.add(getOverCapacity(scMap, ciMap, i, givenRoom));
-			matchRequirements.add(matchRequirements(roomReqs, roomFeats));
-			featuresNotUsed.add(roomFeats.size());
-			classWithoutRoom.add(isClassWithoutRoom(scMap, i));
-		}
-	}
-
-	public static boolean isClassWithoutRoom(LinkedHashMap<String, List<String>> scMap, int i) {
-		return (!scMap.get("Características da sala pedida para a aula").get(i).equals("Não necessita de sala")
-				&& scMap.get("Sala atribuída à aula").get(i).equals("N/A")) ? true : false;
-	}
-
-	public static boolean matchRequirements(List<String> roomRequirements, List<String> roomFeatures) {
-		if (roomRequirements == null)
-			return true;
-
-		List<String> remainingRequirements = new ArrayList<>(roomRequirements);
-		List<String> remainingFeatures = new ArrayList<>(roomFeatures);
-
-		Iterator<String> featureIterator = remainingFeatures.iterator();
-		while (featureIterator.hasNext()) {
-			String feature = featureIterator.next();
-			if (remainingRequirements.remove(feature)) {
-				featureIterator.remove();
-				roomFeatures.clear();
-				roomFeatures.addAll(remainingFeatures);
-				return true;
-
-			}
-		}
-		return false;
-	}
-
-	public static List<String> getRoomRequirements(LinkedHashMap<String, List<String>> scMap, int i) {
-		return (scMap.get("Características da sala pedida para a aula").get(i).equals("Não necessita de sala")) ? null
-				: Arrays.asList(scMap.get("Características da sala pedida para a aula").get(i).split("/"));
-	}
-
-	private static List<String> getRoomFeatures(LinkedHashMap<String, List<String>> ciMap, String givenRoom) {
-
-		List<String> features = new ArrayList<>();
-
-		int index = ciMap.get("Nome sala").indexOf(givenRoom);
-
-		if (index != -1) {
-			for (String key : ciMap.keySet()) {
-				if (ciMap.get(key).get(index).equals("X"))
-					features.add(key);
-			}
-		}
-		return features;
-	}
-
-	private static int getOverCapacity(LinkedHashMap<String, List<String>> scMap,
-			LinkedHashMap<String, List<String>> ciMap, int i, String givenRoom) {
-
-		// Index of room line in database
-		int index = ciMap.get("Nome sala").indexOf(givenRoom);
-
-		return (index != -1) ? Math.max(Integer.parseInt(scMap.get("Inscritos no turno").get(i))
-				- Integer.parseInt(ciMap.get("Capacidade Normal").get(index)), 0) : 0;
 	}
 
 	private static Schedule getSchedule(String option) {

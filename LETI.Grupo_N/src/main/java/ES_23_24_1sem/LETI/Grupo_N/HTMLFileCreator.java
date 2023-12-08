@@ -88,13 +88,10 @@ public class HTMLFileCreator {
 		return f;
 	}
 
-	public static File createScheduleEvaluator(Schedule schedule, List<Integer> overCapacity,
-			List<Boolean> matchRequirements, List<Integer> featuresNotUsed, List<Boolean> classWithoutRoom) {
+	public static File createScheduleEvaluator(LinkedHashMap<String, List<String>> sMap, List<Boolean> userMetrics) {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\ScheduleEvaluator.html";
 		File f = new File(path);
-
-		LinkedHashMap<String, List<String>> map = schedule.getMap();
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("<!DOCTYPE html>\r\n" + "<html lang=\"en\">\r\n" + "<head>\r\n" + "<style>\r\n" + "  table {\r\n"
@@ -116,30 +113,24 @@ public class HTMLFileCreator {
 				+ "  .pagination-buttons button:hover {\r\n" + "    background-color: #45a049;\r\n" + "  }\r\n"
 				+ "</style>\r\n" + "</head>\r\n" + "<body>\r\n" + "\r\n" + "<h2>Schedule Evaluator</h2>\r\n" + "\r\n"
 				+ "<table id=\"myTable\">\r\n" + "  <tr style=\"background-color: #88a0a4;\">\r\n"
-				+ "    <th>Unidade Curricular</th>\r\n" + "<th>Turno</th>\r\n" + "<th>Turma</th>\r\n"
-				+ "<th>Dia da Semana</th>\r\n" + "<th>Hora início da aula</th>\r\n" + "<th>Hora fim da aula</th>\r\n"
-				+ "<th>Data da aula</th>\r\n" + "<th>Sobrelotação (%)</th>\r\n" + "<th>Cumpre requisitos</th>\r\n"
-				+ "<th>Número de características desperdiçadas</th>\r\n"
-				+ "<th>Possui sala atribuída (caso seja requisitada sala)</th>\r\n" + "</tr>");
+				+ "    <th>Curso</th>\r\n" + "    <th>Unidade Curricular</th>\r\n" + "<th>Turno</th>\r\n"
+				+ "<th>Turma</th>\r\n" + "    <th>Inscritos no turno</th>\r\n" + "<th>Dia da Semana</th>\r\n"
+				+ "<th>Hora início da aula</th>\r\n" + "<th>Hora fim da aula</th>\r\n" + "<th>Data da aula</th>\r\n"
+				+ "    <th>Características da sala pedida para a aula</th>\r\n"
+				+ "    <th>Sala atribuída à aula</th>\r\n" + "</tr>");
 
-		for (int i = 0; i < schedule.getMap().get("Unidade Curricular").size(); i++) {
-			sb.append("<tr>\r\n" + "<td>" + map.get("Unidade Curricular").get(i) + "</td>\r\n" + "<td>"
-					+ map.get("Turno").get(i) + "</td>\r\n" + "<td>" + map.get("Turma").get(i) + "</td>\r\n" + "<td>"
-					+ map.get("Dia da semana").get(i) + "</td>\r\n" + "<td>" + map.get("Hora início da aula").get(i)
-					+ "</td>\r\n" + "<td>" + map.get("Hora fim da aula").get(i) + "</td>\r\n" + "<td>"
-					+ map.get("Data da aula").get(i) + "</td>\r\n" + "<td>");
+		for (int i = 0; i < sMap.get("Curso").size(); i++)
+			if (userMetrics.get(i))
+				sb.append("<tr>\r\n" + "<td>" + sMap.get("Curso").get(i) + "</td>\r\n" + "<td>"
+						+ sMap.get("Unidade Curricular").get(i) + "</td>\r\n" + "<td>" + sMap.get("Turno").get(i)
+						+ "</td>\r\n" + "<td>" + sMap.get("Turma").get(i) + "</td>\r\n" + "<td>"
+						+ sMap.get("Inscritos no turno").get(i) + "</td>\r\n" + "<td>"
+						+ sMap.get("Dia da semana").get(i) + "</td>\r\n" + "<td>"
+						+ sMap.get("Hora início da aula").get(i) + "</td>\r\n" + "<td>"
+						+ sMap.get("Hora fim da aula").get(i) + "</td>\r\n" + "<td>" + sMap.get("Data da aula").get(i)
+						+ "</td>\r\n" + "<td>" + sMap.get("Características da sala pedida para a aula").get(i)
+						+ "</td>\r\n" + "<td>" + sMap.get("Sala atribuída à aula").get(i) + "</td>\r\n");
 
-			sb.append(
-					(Integer.parseInt(map.get("Inscritos no turno").get(i)) > 0)
-							? (int) (((double) overCapacity.get(i)
-									/ (double) Integer.parseInt(map.get("Inscritos no turno").get(i))) * 100)
-							: 0);
-			sb.append("</td>\r\n");
-			sb.append(matchRequirements.get(i) ? "<td>&#10003;</td>\r\n" : "<td>&#10005;</td>\r\n");
-			sb.append("<td>" + featuresNotUsed.get(i) + "</td>\r\n");
-			sb.append(classWithoutRoom.get(i) ? "<td>&#10005;</td>\r\n" : "<td>&#10003;</td>\r\n");
-			sb.append("</tr>\r\n");
-		}
 		sb.append("</table>\r\n" + "\r\n" + "<div class=\"pagination\" id=\"pagination\">\r\n" + "</div>\r\n" + "\r\n"
 				+ "<div class=\"pagination-buttons\" id=\"paginationButtons\">\r\n" + "</div>\r\n" + "\r\n"
 				+ "<script>\r\n" + "document.addEventListener(\"DOMContentLoaded\", function () {\r\n"
@@ -185,6 +176,7 @@ public class HTMLFileCreator {
 				+ "    for (var i = start + 1; i < end + 1 && i < table.rows.length; i++) {\r\n"
 				+ "      table.rows[i].style.display = \"\";\r\n" + "    }\r\n" + "  }\r\n" + "});\r\n"
 				+ "</script>\r\n" + "\r\n" + "</body>\r\n" + "</html>");
+
 		write(f, sb);
 		return f;
 	}
