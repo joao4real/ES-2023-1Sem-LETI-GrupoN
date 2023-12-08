@@ -135,7 +135,8 @@ public class App {
 		evaluateScheduleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new UserMetricsAnalyser(schedule.getLabels(), database.getLabels());
+				new UserMetricsAnalyser(schedule.getMap(), database.getMap());
+				//((CardLayout) cardPanel.getLayout()).show(cardPanel, "EVALUATE_PANEL");
 			}
 		});
 

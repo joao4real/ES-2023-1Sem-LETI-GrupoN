@@ -5,158 +5,136 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class UserMetricsAnalyser extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final Dimension COMBO_BOX_SIZE = new Dimension(30, 25);
-	private JPanel comboBoxPanel; // Panel to hold combo boxes
+    private static final long serialVersionUID = 1L;
+    private static final Dimension COMPONENT_SIZE = new Dimension(100, 25);
 
-	private List<JComboBox<String>> boxes = new ArrayList<>();
-	private JTextField resultadoField;
-	private String[] fields;
-	private String[] operadoresGerais = {"--", "+", "-", "*", "/", "<", ">", ">=", "<=", "!=", "=" };
-	private int boxCounter = 0;
-	private String expression;
+    private JPanel comboBoxPanel;
+    private JPanel inputPanel;
+    private List<JComboBox<String>> boxes = new ArrayList<>();
+    private LinkedHashMap<String, List<String>> sMap;
+    private LinkedHashMap<String, List<String>> cMap;
+    private JTextField resultadoField;
+    private String[] fields;
+    private String[] operators = {"--", "+", "-", "*", "/", "<", ">", ">=", "<=", "!=", "="};
+    private int boxCounter = 0;
+    private String expression = "";
+    private boolean allowToCreate = true;
 
-	private boolean allowToCreate = true;
+    public UserMetricsAnalyser(LinkedHashMap<String, List<String>> sMap, LinkedHashMap<String, List<String>> cMap) {
+        this.sMap = sMap;
+        this.cMap = cMap;
+        fields = getFields();
+        setTitle("Schedule Evaluator");
+        setSize(1500, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-	public UserMetricsAnalyser(String[] scheduleFields, String[] databaseFields) {
+        setLayout(new BorderLayout());
 
-		fields = getFields(scheduleFields, databaseFields);
-		setTitle("Schedule Evaluator");
-		setSize(800, 200);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
+        comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel = new JPanel(new GridLayout(1, 1)); // Use GridLayout for the input panel
+        inputPanel.setPreferredSize(new Dimension(1500, 25)); // Set the initial size
 
-		setLayout(new BorderLayout());
+        add(comboBoxPanel, BorderLayout.PAGE_START);
+        add(inputPanel, BorderLayout.CENTER);
 
-		// Create a panel for combo boxes and add it to the left
-		comboBoxPanel = new JPanel();
-		comboBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Left-align combo boxes
-		add(comboBoxPanel, BorderLayout.LINE_START); // Add combo box panel to the left
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton calcularButton = new JButton("Calcular");
+        calcularButton.addActionListener(e -> calcular());
+        JButton addButton = new JButton("Add");
+        addButton.addActionListener(e -> {
+            if (allowToCreate) {
+                if (boxCounter > 0 && isEquationElement((String)boxes.get(boxes.size() - 1).getSelectedItem())) {
+                    addJText();
+                } else {
+                    createNextComboBox();
+                }
+            }
+        });
 
-		// Create a panel for buttons and add it to the right
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Right-align buttons
-		JButton calcularButton = new JButton("Calcular");
-		calcularButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				calcular();
-			}
-		});
-		JButton addButton = new JButton("Add");
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (allowToCreate) {
-					if (!boxes.isEmpty()) {
-						if (boxes.get(boxes.size() - 1).getSelectedItem().equals("--")) {
-							return;
-						} else {
-							System.out.println(boxes.get(boxes.size() - 1).getSelectedItem());
-							addComboBox();
-						}
-					} else {
-						addComboBox();
-					}
-				} else {
-					expression += scanInteger(resultadoField.getText());
-					resultadoField = new JTextField();
-					add(resultadoField, BorderLayout.CENTER);
-				}
-			}
-		});
-		buttonPanel.add(addButton);
-		buttonPanel.add(calcularButton);
-		add(buttonPanel, BorderLayout.LINE_END); // Add button panel to the right
-		setVisible(true);
-	}
+        buttonPanel.add(addButton);
+        buttonPanel.add(calcularButton);
+        add(buttonPanel, BorderLayout.PAGE_END);
 
-	private String[] getFields(String[] scheduleFields, String[] databaseFields) {
-		String[] fields = new String[scheduleFields.length + databaseFields.length + 1];
-		fields[0] = "--";
+        setVisible(true);
+    }
 
-		for (int i = 1; i < scheduleFields.length + 1; i++)
-			fields[i] = scheduleFields[i - 1];
+    private String[] getFields() {
+        List<String> fieldList = new ArrayList<>();
+        fieldList.add("--");
+        fieldList.addAll(sMap.keySet());
+        fieldList.addAll(cMap.keySet());
+        return fieldList.toArray(new String[0]);
+    }
 
-		for (int j = scheduleFields.length + 1; j < fields.length; j++)
-			fields[j] = databaseFields[j - (scheduleFields.length + 1)];
+    public void createNextComboBox() {
+        if (boxes.isEmpty() || !boxes.get(boxes.size() - 1).getSelectedItem().equals("--")) {
+            addComboBox();
+        }
+    }
 
-		return fields;
-	}
+    private void addJText() {
+        resultadoField = new JTextField();
+        resultadoField.setPreferredSize(COMPONENT_SIZE);
 
-	private void addComboBox() {
-		JComboBox<String> newComboBox;
+        // Create a panel to hold both JComboBox and JTextField
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-		if (boxCounter % 2 != 0)
-			newComboBox = createComboBox(operadoresGerais, boxes);
-		else
-			newComboBox = createComboBox(fields, boxes);
+//        // Get the last JComboBox to set its size
+//        JComboBox<String> lastComboBox = boxes.get(boxes.size() - 1);
+//        lastComboBox.setMaximumSize(COMPONENT_SIZE);
+//        panel.add(lastComboBox);
+        panel.add(resultadoField);
+        comboBoxPanel.add(panel);
+        allowToCreate = false;
+        expression = getExpression() + resultadoField.getText();
 
-		boxCounter++;
-		comboBoxPanel.add(newComboBox);
-		revalidate(); // Update the layout
-		repaint();
 
-	}
+        revalidate();
+        repaint();
+    }
 
-//  private void atualizarComboBoxOperadores() {
-//        comboBoxOperadores.removeAllItems();
-//
-//        for (String operador : operadoresGerais) {
-//            if (!operadoresStringArray.contains(operador) || tipoCampoSelecionado != 1) {
-//                comboBoxOperadores.addItem(operador);
-//            }
-//        }
-//    }
 
-	private void calcular() {
-		Object[] options = { "Yes, Evaluate", "Cancel" };
-		JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + getExpression(),
-				"Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-				options[0]);
-		System.out.println(getExpression());
-	}
 
-	private String getExpression() {
-		expression = "";
-		String item = "";
-		for (JComboBox<String> box : boxes) {
-			item = (String) box.getSelectedItem();
-			expression += item + "  ";
-			if (isEquationElement(item))
-				System.out.println("PASSEI POR AQUI");
-			allowToCreate = false;
-		}
-		return expression;
-	}
 
-	private static <T> JComboBox<T> createComboBox(T[] items, List<JComboBox<T>> boxes) {
-		JComboBox<T> comboBox = new JComboBox<>(items);
-		comboBox.setMaximumSize(COMBO_BOX_SIZE);
-		comboBox.setEditable(false);
-		boxes.add(comboBox);
-		return comboBox;
-	}
+    private void addComboBox() {
+        JComboBox<String> newComboBox = createComboBox((boxCounter % 2 != 0) ? operators : fields);
+        boxCounter++;
+        comboBoxPanel.add(newComboBox);
+        boxes.add(newComboBox);
+        revalidate();
+        repaint();
+    }
 
-	private static boolean isEquationElement(String s) {
-		return (s.equals(">=") || s.equals("<=") || s.equals(">") || s.equals("<") || s.equals("=") || s.equals("!="));
-	}
+    private void calcular() {
+        Object[] options = {"Yes, Evaluate", "Cancel"};
+        int x = JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression,
+                "Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+                options[0]);
+        // Add your calculation logic here if needed
+    }
 
-	private static int scanInteger(String input) {
-		int a;
-		try {
-			a = Integer.parseInt(input);
-		} catch (NumberFormatException e) {
-			System.err.println("Invalid input. Please enter an integer.");
-			return -1;
-		}
-		return a;
-	}
+    private String getExpression() {
+        StringBuilder sb = new StringBuilder();
+        for (JComboBox<String> box : boxes) {
+            sb.append(box.getSelectedItem()).append(";");
+        }
+        return sb.toString();
+    }
+
+    private static <T> JComboBox<T> createComboBox(T[] items) {
+        JComboBox<T> comboBox = new JComboBox<>(items);
+        comboBox.setMaximumSize(COMPONENT_SIZE);
+        comboBox.setEditable(false);
+        return comboBox;
+    }
+
+    private static boolean isEquationElement(String s) {
+        return (s.equals(">=") || s.equals("<=") || s.equals(">") || s.equals("<") || s.equals("=") || s.equals("!="));
+    }
 }

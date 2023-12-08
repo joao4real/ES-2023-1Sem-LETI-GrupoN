@@ -1,7 +1,6 @@
 package ES_23_24_1sem.LETI.Grupo_N;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,14 +15,13 @@ public class Calculator {
 	public Calculator(HashMap<String, List<String>> sMap, HashMap<String, List<String>> cMap, String s) {
 		this.sMap = sMap;
 		this.cMap = cMap;
-		String[] data = s.split("  ");
+		String[] data = s.split(";");
 		this.data = data;
 		getType(data[0]);
 	}
 
 	private void getType(String d) {
-		String x;
-		x = null;
+		String x = null;
 		for (String s : sMap.keySet())
 			if (s.equals(d))
 				x = d;
@@ -36,16 +34,17 @@ public class Calculator {
 
 	private void fillType(String x) {
 		switch (x) {
-		case ("Inscritos no turno"):
+		case "Inscritos no turno":
+		case "Capacidade Normal":
+		case "Capacidade Exame":
+		case "Número Características":
 			type = "i";
 			break;
-		case ("Hora início da aula"):
+		case "Hora início da aula":
+		case "Hora fim da aula":
 			type = "t";
 			break;
-		case ("Hora fim da aula"):
-			type = "t";
-			break;
-		case ("Data da aula"):
+		case "Data da aula":
 			type = "d";
 			break;
 		default:
@@ -73,50 +72,55 @@ public class Calculator {
 	}
 
 	private void calculateDate() {
-		for (int i = 0; i < sMap.get("Curso").size(); i++) {
-			boolean b = sMap.get(data[0]).get(i).equals(sMap.get(data[2]).get(i));
-			list.set(i, (data[1].equals("=")) ? b : !b);
-		}
-	}
+        for (int i = 0; i < sMap.get("Curso").size(); i++) {
+            Date d = new Date(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
+            list.add(sMap.get(data[0]).get(i) == "N/A" ? false : calculate(new Date(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
+        }
+    }
 
-	private void calculateTime() {
-		for (int i = 0; i < sMap.get("Curso").size(); i++) {
-			boolean b = sMap.get(data[0]).get(i).equals(sMap.get(data[2]).get(i));
-			list.set(i, (data[1].equals("=")) ? b : !b);
-		}
-	}
+    private void calculateTime() {
+        for (int i = 0; i < sMap.get("Curso").size(); i++) {
+            Time d = new Time(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
+            list.add(sMap.get(data[0]).get(i) == "N/A" ? false : calculate(new Time(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
+        }
+    }
 
-	private void calculateString() {
-		for (int i = 0; i < sMap.get("Curso").size(); i++) {
-			String[] s1 = sMap.get(data[0]).get(i).split("/");
-			String[] s2 = sMap.get(data[2]).get(i).split("/");
-			boolean b = false;
-			for (int j = 0; j < s1.length; j++)
-				for (int k = 0; k < s2.length; k++)
-					if (s1[j].equals(s2[k])) {
-						b = true;
-						break;
-					}
-			list.set(i, (data[1].equals("=")) ? b : !b);
-		}
-	}
+    private void calculateString() {
+        for (int i = 0; i < sMap.get("Curso").size(); i++) {
+            String[] s1 = smartSplit(sMap.get(data[0]).get(i));
+            String[] s2 = sMap.get(data[2]) != null ? smartSplit(sMap.get(data[2]).get(i)) : new String[] { data[2] };
+            boolean b = false;
+            for (int j = 0; j < s1.length; j++)
+                for (int k = 0; k < s2.length; k++)
+                    if (s1[j].equals(s2[k])) {
+                        b = true;
+                        break;
+                    }
+            list.add(data[1].equals("=") ? b : !b);
+        }
+    }
+    
+    private String[] smartSplit(String s) {
+        for(int i = 0; i < s.length() ; i++)
+            if(s.charAt(i) == ',')
+                return s.split(",");
+        return s.split("/");
+    }
 
 	private void calculateInt() {
-		int j = searchComparator(data);
-		for (int i = 0; i < sMap.get("Curso").size(); i++) {
-			int a = sumMetrics(Arrays.copyOfRange(data, 0, j));
-			int b = Integer.parseInt(data[data.length - 1]);
-			list.set(i, calculate(a, b, data[j]));
-		}
-	}
-
-	private static int searchComparator(String[] data) {
-		for (int i = 0; i < data.length; i++)
-			if (data[i].equals(">") || data[i].equals("<") || data[i].equals(">=") || data[i].equals("<=")
-					|| data[i].equals("!=") || data[i].equals("="))
-				return i;
-		return -1;
-	}
+        for (int i = 0; i < sMap.get("Curso").size(); i++) {
+            int a = intSolver(i);
+            int b = Integer.parseInt(isKey(data[data.length - 1])
+                    ? sMap.get(data[data.length - 1]) != null ? sMap.get(data[data.length - 1]).get(i)
+                            : cMap.get(data[data.length - 1]).get(i)
+                    : data[data.length - 1]);
+            list.add(calculate(a, b, data[data.length - 2]));
+        }
+    }
+	
+	private boolean isKey(String s) {
+        return sMap.get(s) != null || cMap.get(s) != null;
+    }
 
 	private static boolean calculate(int a, int b, String s) {
 		switch (s) {
@@ -135,27 +139,29 @@ public class Calculator {
 		}
 	}
 
-	private static int sumMetrics(String[] arr) {
+	private int intSolver(int i) {
 		int x = 0;
-//		for (int i = 0; i < arr.length; i++)
-//			switch (arr[i]) {
-//			case ("+"):
-//				x += arr[i];
-//				break;
-//			case ("-"):
-//				x -= arr[i];
-//				break;
-//			case ("*"):
-//				x *= arr[i];
-//
-//				break;
-//			case ("/"):
-//				x /= arr[i];
-//
-//				break;
-//			default:
-//				x = arr[i];
-//			}
+		for (int j = 0; j < data.length - 2; j++)
+			switch (data[j]) {
+			case ("+"):
+				x += getInt(++j, i);
+				break;
+			case ("-"):
+				x -= getInt(++j, i);
+				break;
+			case ("*"):
+				x *= getInt(++j, i);
+				break;
+			case ("/"):
+				x /= getInt(++j, i);
+				break;
+			default:
+				x = getInt(j, i);
+			}
 		return x;
+	}
+
+	private int getInt(int j, int i) {
+		return Integer.parseInt(sMap.get(data[j]) != null ? sMap.get(data[j]).get(i) : cMap.get(data[j]).get(i));
 	}
 }
