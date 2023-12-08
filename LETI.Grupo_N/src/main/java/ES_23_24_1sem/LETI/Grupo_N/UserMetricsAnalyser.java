@@ -117,6 +117,9 @@ public class UserMetricsAnalyser extends JFrame {
                 "Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
                 options[0]);
         // Add your calculation logic here if needed
+        Calculator c = new Calculator(sMap,cMap,"Inscritos no turno;+;10;>;28");
+        List<Boolean> l = c.calculate();
+        l.forEach(b -> System.out.println(b));
     }
 
     private String getExpression() {

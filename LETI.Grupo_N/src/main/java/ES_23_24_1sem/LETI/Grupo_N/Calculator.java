@@ -72,55 +72,58 @@ public class Calculator {
 	}
 
 	private void calculateDate() {
-        for (int i = 0; i < sMap.get("Curso").size(); i++) {
-            Date d = new Date(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
-            list.add(sMap.get(data[0]).get(i) == "N/A" ? false : calculate(new Date(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
-        }
-    }
+		for (int i = 0; i < sMap.get("Curso").size(); i++) {
+			Date d = new Date(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
+			list.add(sMap.get(data[0]).get(i) == "N/A" ? false
+					: calculate(new Date(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
+		}
+	}
 
-    private void calculateTime() {
-        for (int i = 0; i < sMap.get("Curso").size(); i++) {
-            Time d = new Time(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
-            list.add(sMap.get(data[0]).get(i) == "N/A" ? false : calculate(new Time(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
-        }
-    }
+	private void calculateTime() {
+		for (int i = 0; i < sMap.get("Curso").size(); i++) {
+			Time d = new Time(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
+			list.add(sMap.get(data[0]).get(i) == "N/A" ? false
+					: calculate(new Time(sMap.get(data[0]).get(i)).compareTo(d), 0, data[1]));
+		}
+	}
 
-    private void calculateString() {
-        for (int i = 0; i < sMap.get("Curso").size(); i++) {
-            String[] s1 = smartSplit(sMap.get(data[0]).get(i));
-            String[] s2 = sMap.get(data[2]) != null ? smartSplit(sMap.get(data[2]).get(i)) : new String[] { data[2] };
-            boolean b = false;
-            for (int j = 0; j < s1.length; j++)
-                for (int k = 0; k < s2.length; k++)
-                    if (s1[j].equals(s2[k])) {
-                        b = true;
-                        break;
-                    }
-            list.add(data[1].equals("=") ? b : !b);
-        }
-    }
-    
-    private String[] smartSplit(String s) {
-        for(int i = 0; i < s.length() ; i++)
-            if(s.charAt(i) == ',')
-                return s.split(",");
-        return s.split("/");
-    }
+	private void calculateString() {
+		for (int i = 0; i < sMap.get("Curso").size(); i++) {
+			String[] s1 = smartSplit(sMap.get(data[0]).get(i));
+			String[] s2 = sMap.get(data[2]) != null ? smartSplit(sMap.get(data[2]).get(i)) : new String[] { data[2] };
+			boolean b = false;
+			for (int j = 0; j < s1.length; j++)
+				for (int k = 0; k < s2.length; k++)
+					if (s1[j].equals(s2[k])) {
+						b = true;
+						break;
+					}
+			list.add(data[1].equals("=") ? b : !b);
+		}
+	}
+
+	private String[] smartSplit(String s) {
+		for (int i = 0; i < s.length(); i++)
+			if (s.charAt(i) == ',')
+				return s.split(",");
+		return s.split("/");
+	}
 
 	private void calculateInt() {
-        for (int i = 0; i < sMap.get("Curso").size(); i++) {
-            int a = intSolver(i);
-            int b = Integer.parseInt(isKey(data[data.length - 1])
-                    ? sMap.get(data[data.length - 1]) != null ? sMap.get(data[data.length - 1]).get(i)
-                            : cMap.get(data[data.length - 1]).get(i)
-                    : data[data.length - 1]);
-            list.add(calculate(a, b, data[data.length - 2]));
-        }
-    }
-	
+		for (int i = 0; i < sMap.get("Curso").size(); i++) {
+			int a = intSolver(i);
+			int j = cMap.get("Nome sala").indexOf(sMap.get("Sala atribuída à aula").get(i));
+			list.add(j == -1 ? false
+					: calculate(a,
+							Integer.parseInt(isKey(data[data.length - 1]) ? cMap.get(data[data.length - 1]).get(j)
+									: data[data.length - 1]),
+							data[data.length - 2]));
+		}
+	}
+
 	private boolean isKey(String s) {
-        return sMap.get(s) != null || cMap.get(s) != null;
-    }
+		return sMap.get(s) != null || cMap.get(s) != null;
+	}
 
 	private static boolean calculate(int a, int b, String s) {
 		switch (s) {
@@ -162,6 +165,6 @@ public class Calculator {
 	}
 
 	private int getInt(int j, int i) {
-		return Integer.parseInt(sMap.get(data[j]) != null ? sMap.get(data[j]).get(i) : cMap.get(data[j]).get(i));
+			return Integer.parseInt(isKey(data[j]) ? sMap.get(data[j]) != null ? sMap.get(data[j]).get(i) : cMap.get(data[j]).get(i) : data[j]);
 	}
 }
