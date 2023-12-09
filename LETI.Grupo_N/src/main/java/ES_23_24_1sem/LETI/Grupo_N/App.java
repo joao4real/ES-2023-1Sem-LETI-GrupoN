@@ -8,7 +8,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,29 +26,76 @@ public class App {
 	private static JFrame frame;
 	private static Schedule schedule;
 	private static ClassroomsInfo database;
+	private static String mapping = "X";
+	private static String expression = "X";
 
 	public static void main(String[] args) throws IOException {
 
 		frame = new JFrame("Schedule Analyser");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 250);
-		
-		database = ClassroomsInfo.createClassroomsInfoByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/CaracterizacaoSalas.csv");
+
+		database = ClassroomsInfo.createClassroomsInfoByRemoteFile(
+				"https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/CaracterizacaoSalas.csv");
 
 		JPanel cardPanel = new JPanel(new CardLayout());
 
+		JPanel mainPanel = createMainPanel(cardPanel);
 		JPanel importPanel = createImportPanel(cardPanel);
 		JPanel optionsPanel = createOptionsPanel(cardPanel);
 
+		cardPanel.add(mainPanel, "MAIN_PANEL");
 		cardPanel.add(importPanel, "IMPORT_PANEL");
 		cardPanel.add(optionsPanel, "OPTIONS_PANEL");
 
 		CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-		cardLayout.show(cardPanel, "IMPORT_PANEL");
+		cardLayout.show(cardPanel, "MAIN_PANEL");
 
 		frame.add(cardPanel);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+	}
+
+	private static JPanel createMainPanel(JPanel cardPanel) {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.PAGE_START;
+		c.insets = new Insets(10, 0, 10, 0);
+
+		panel.add(new JLabel("Do you have a pre-configurared text file?"), c);
+
+		JButton yesButton = new JButton("Yes");
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.CENTER;
+		panel.add(yesButton, c);
+
+		JButton noButton = new JButton("No");
+		c.gridy = 2;
+		c.anchor = GridBagConstraints.PAGE_END;
+		panel.add(noButton, c);
+
+		yesButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				String input = JOptionPane.showInputDialog(frame, "Type the path for text file", null);
+				if (input != null && !input.isEmpty()) {
+					setUserConfiguration(new File(input));
+					((CardLayout) cardPanel.getLayout()).show(cardPanel, "IMPORT_PANEL");
+				}
+			}
+		});
+
+		noButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				((CardLayout) cardPanel.getLayout()).show(cardPanel, "IMPORT_PANEL");
+			}
+		});
+
+		return panel;
 	}
 
 	private static JPanel createImportPanel(JPanel cardPanel) {
@@ -126,7 +176,10 @@ public class App {
 		evaluateScheduleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new UserMetricsAnalyser(schedule.getMap(), database.getMap());
+				if(expression.equals("X"))
+					new UserMetricsAnalyser(schedule.getMap(), database.getMap());
+				else
+					new UserMetricsAnalyser(schedule.getMap(), database.getMap(),expression);
 			}
 		});
 
@@ -151,14 +204,14 @@ public class App {
 		case "l":
 			input = JOptionPane.showInputDialog(frame, "Type the path for local file", null);
 			if (input != null && !input.isEmpty()) {
-				return Schedule.createScheduleByLocalFile(input);
+				return Schedule.createScheduleByLocalFile(input, mapping);
 			} else {
 				return null;
 			}
 		case "r":
 			input = JOptionPane.showInputDialog(frame, "Type the URL for remote file", null);
 			if (input != null && !input.isEmpty()) {
-				return Schedule.createScheduleByRemoteFile(input);
+				return Schedule.createScheduleByRemoteFile(input, mapping);
 			} else {
 				return null;
 			}
@@ -168,10 +221,34 @@ public class App {
 		}
 	}
 
+	public static void setUserConfiguration(File textFile) {
+
+		try {
+			Scanner sc = new Scanner(textFile);
+			readTextFile(sc);
+			sc.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void readTextFile(Scanner sc) {
+		StringBuilder textMapping = new StringBuilder();
+		int i = 0;
+		while (sc.hasNextLine()) {
+			if(i < 11)
+				textMapping.append(sc.nextLine() + "\n");
+			else
+				expression = sc.nextLine();
+			i++;
+		}
+		mapping = textMapping.toString();
+	}
+
 	public static void openWebPage(File htmlFile) {
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
-			Thread.sleep(500);
+			Thread.sleep(5000);
 			if (htmlFile.delete())
 				System.out.println("HTML file deleted successfully!");
 			else

@@ -2,6 +2,11 @@ package ES_23_24_1sem.LETI.Grupo_N;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +32,26 @@ public class UserMetricsAnalyser extends JFrame {
 		this.sMap = sMap;
 		this.cMap = cMap;
 		fields = getFields();
+		initialize();
+	}
+
+	public UserMetricsAnalyser(LinkedHashMap<String, List<String>> sMap, LinkedHashMap<String, List<String>> cMap,
+			String expression) {
+		this.sMap = sMap;
+		this.cMap = cMap;
+		this.expression = expression;
+		showSchedule();
+	}
+
+	private String[] getFields() {
+		List<String> fieldList = new ArrayList<>();
+		fieldList.add("--");
+		fieldList.addAll(sMap.keySet());
+		fieldList.addAll(cMap.keySet());
+		return fieldList.toArray(new String[0]);
+	}
+
+	private void initialize() {
 		setTitle("Schedule Evaluator");
 		setSize(1500, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,14 +86,6 @@ public class UserMetricsAnalyser extends JFrame {
 		setVisible(true);
 	}
 
-	private String[] getFields() {
-		List<String> fieldList = new ArrayList<>();
-		fieldList.add("--");
-		fieldList.addAll(sMap.keySet());
-		fieldList.addAll(cMap.keySet());
-		return fieldList.toArray(new String[0]);
-	}
-
 	public void createNextComboBox() {
 		if (boxes.isEmpty() || !boxes.get(boxes.size() - 1).getSelectedItem().equals("--"))
 			addComboBox();
@@ -97,17 +114,30 @@ public class UserMetricsAnalyser extends JFrame {
 	private void calculate() {
 		Object[] options = { "Yes, Show Results", "Cancel" };
 		expression += getSelectedItems() + fieldResult.getText();
-		if (JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression,
+		if (JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression.replace(";"," "),
 				"Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
 				options[0]) == JOptionPane.YES_OPTION) {
 			showSchedule();
+			write(expression, new File(System.getProperty("user.home") + "\\Desktop\\ScheduleConfigurator.txt"));
 		}
 	}
 
+	private void write(String expression, File file) {
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+			writer.write(expression);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	private void showSchedule() {
-		App.openWebPage(HTMLFileCreator.createScheduleEvaluator(sMap,new Calculator(sMap, cMap,expression).calculate()));
-		
-		
+		App.openWebPage(
+				HTMLFileCreator.createScheduleEvaluator(sMap, new Calculator(sMap, cMap, expression).calculate()));
+		System.exit(0);
 	}
 
 	private String getSelectedItems() {

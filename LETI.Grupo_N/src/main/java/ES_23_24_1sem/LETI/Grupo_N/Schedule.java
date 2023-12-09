@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -16,13 +17,15 @@ import java.util.Map;
 public class Schedule extends HashData {
 
 	private LinkedHashMap<String, String> fieldMapping = new LinkedHashMap<>();
+	private String mapping;
 
-	public Schedule() {
+	public Schedule(String mapping) {
 		super();
+		this.mapping = mapping;
 	}
 
-	public static Schedule createScheduleByLocalFile(String path) {
-		Schedule schedule = new Schedule();
+	public static Schedule createScheduleByLocalFile(String path, String mapping) {
+		Schedule schedule = new Schedule(mapping);
 		try {
 			Scanner sc = new Scanner(new File(path));
 			schedule.readFile(sc);
@@ -32,8 +35,8 @@ public class Schedule extends HashData {
 		return schedule;
 	}
 
-	public static Schedule createScheduleByRemoteFile(String urlStr) {
-		Schedule schedule = new Schedule();
+	public static Schedule createScheduleByRemoteFile(String urlStr, String mapping) {
+		Schedule schedule = new Schedule(mapping);
 		try {
 			InputStream in = new URL(urlStr).openStream();
 			schedule.readFile(new Scanner(in));
@@ -51,14 +54,38 @@ public class Schedule extends HashData {
 	@Override
 	public void readFile(Scanner sc) {
 		super.readFile(sc);
-		JPanel panel = createMappingPanel();
-		if (showMappingDialog(panel) == JOptionPane.OK_OPTION)
-			updateFieldMapping(panel);
+		if (mapping.equals("X"))
+			makeMappingManually(createMappingPanel());
 		else
-			return;
+			makeMappingAutomatically(mapping);
 		changeKeys();
 	}
 
+	private void makeMappingAutomatically(String mapping) {
+		String[] s = mapping.split("\n");
+		for (int i = 0; i < s.length; i++) {
+			String[] x = s[i].split("->");
+			fieldMapping.put(x[0], x[1]);
+		}
+	}
+
+	private void makeMappingManually(JPanel panel) {
+		if (showMappingDialog(panel) == JOptionPane.OK_OPTION)
+			updateFieldMapping(panel);
+		writeTextFile(fieldMapping);
+	}
+
+	private void writeTextFile(LinkedHashMap<String, String> fieldMapping) {
+		File f = new File(System.getProperty("user.home") + "\\Desktop\\ScheduleConfigurator.txt");
+		try {
+		PrintWriter writer = new PrintWriter(f);
+		fieldMapping.forEach((k,v) -> writer.write(k + "->" + v + "\n"));
+		writer.close();
+		}catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private JPanel createMappingPanel() {
 		JPanel panel = new JPanel(new GridLayout(0, 2));
 
