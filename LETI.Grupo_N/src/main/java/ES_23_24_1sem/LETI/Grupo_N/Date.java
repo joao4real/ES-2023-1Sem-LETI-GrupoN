@@ -18,10 +18,19 @@ public class Date implements Comparable<Date> {
      */
     public Date(String s) {
         String[] d = s.split("/");
-        day = Integer.parseInt(d[0]);
-        month = Integer.parseInt(d[1]);
-        year = Integer.parseInt(d[2]);
-    }
+        String[] conf = App.getDateConf();
+        for(int i = 0; i < d.length;i++)
+            switch(conf[i]) {
+            case "aaaa":
+                year = Integer.parseInt(d[i]);
+                break;
+            case "mm":
+                month = Integer.parseInt(d[i]);
+                break;
+            default:
+                day = Integer.parseInt(d[i]);
+            }
+   }
 
     /**
      * Compares this Date object with another Date object for order.

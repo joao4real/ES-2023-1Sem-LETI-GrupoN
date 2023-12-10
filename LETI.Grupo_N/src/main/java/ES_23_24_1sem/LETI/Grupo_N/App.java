@@ -28,6 +28,8 @@ public class App {
 	private static ClassroomsInfo database;
 	private static String mapping = "X";
 	private static String expression = "X";
+	private static String[] timeConf = { "hh", "mm", "ss" };
+    private static String[] dateConf = { "dd", "mm", "aaaa" };
 
 	/**
      * The main method of the application.
@@ -273,17 +275,28 @@ public class App {
      * @param sc The scanner for reading the text file.
      */
 	static void readTextFile(Scanner sc) {
-		StringBuilder textMapping = new StringBuilder();
-		int i = 0;
-		while (sc.hasNextLine()) {
-			if(i < 11)
-				textMapping.append(sc.nextLine() + "\n");
-			else
-				expression = sc.nextLine();
-			i++;
-		}
-		mapping = textMapping.toString();
-	}
+        StringBuilder textMapping = new StringBuilder();
+        int i = 0;
+        String[] t;
+        while (sc.hasNextLine()) {
+            if (i < 11)
+                textMapping.append(sc.nextLine() + "\n");
+            else if (i == 11)
+                expression = sc.nextLine();
+            else {
+                t = sc.nextLine().split("->");
+                switch (t[0]) {
+                case ("Date"):
+                    dateConf = t[1].split("/");
+                    break;
+                default:
+                    timeConf = t[1].split(":");
+                }
+            }
+            i++;
+        }
+        mapping = textMapping.toString();
+    }
 
 	/**
      * Opens the default web browser to display the generated HTML schedule file.
@@ -331,4 +344,12 @@ public class App {
 	public static String getExpression() {
 		return expression;
 	}
+	
+	 public static String[] getDateConf() {
+	        return dateConf;
+	    }
+
+	    public static String[] getTimeConf() {
+	        return timeConf;
+	    }
 }

@@ -16,9 +16,9 @@ public class Test_datetime {
      */
     @Test
     public void testCompareToDate() {
-        Date date1 = new Date("01/01/2022");
-        Date date2 = new Date("01/01/2023");
-        Date date3 = new Date("01/01/2022");
+    	 Date date1 = new Date("10/10/2022");
+         Date date2 = new Date("10/10/2023");
+         Date date3 = new Date("10/10/2022");
 
         assertTrue(date1.compareTo(date2) < 0, "date1 deve ser menor que date2");
         assertTrue(date2.compareTo(date1) > 0, "date2 deve ser maior que date1");
@@ -33,9 +33,9 @@ public class Test_datetime {
      */
     @Test
     public void testEqualsDate() {
-        Date date1 = new Date("01/01/2022");
-        Date date2 = new Date("01/01/2023");
-        Date date3 = new Date("01/01/2022");
+        Date date1 = new Date("10/10/2022");
+        Date date2 = new Date("10/10/2023");
+        Date date3 = new Date("10/10/2022");
 
         assertFalse(date1.equals(date2), "date1 e date2 não devem ser iguais");
         assertTrue(date1.equals(date3), "date1 e date3 devem ser iguais");

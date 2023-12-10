@@ -16,9 +16,18 @@ public class Time implements Comparable<Time> {
      */
     public Time(String s) {
         String[] d = s.split(":");
-        hours = Integer.parseInt(d[0]);
-        minutes = Integer.parseInt(d[1]);
-        seconds = Integer.parseInt(d[2]);
+        String[] conf = App.getTimeConf();
+        for(int i = 0; i < d.length;i++)
+            switch(conf[i]) {
+            case "hh":
+                hours = Integer.parseInt(d[i]);
+                break;
+            case "mm":
+                minutes = Integer.parseInt(d[i]);
+                break;
+            default:
+                seconds = Integer.parseInt(d[i]);
+            }
     }
 
     /**
