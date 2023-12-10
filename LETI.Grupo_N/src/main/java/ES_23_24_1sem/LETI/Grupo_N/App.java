@@ -56,7 +56,7 @@ public class App {
 		frame.setVisible(true);
 	}
 
-	private static JPanel createMainPanel(JPanel cardPanel) {
+	static JPanel createMainPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -98,7 +98,7 @@ public class App {
 		return panel;
 	}
 
-	private static JPanel createImportPanel(JPanel cardPanel) {
+	static JPanel createImportPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -140,7 +140,7 @@ public class App {
 		return panel;
 	}
 
-	private static JPanel createOptionsPanel(JPanel cardPanel) {
+	static JPanel createOptionsPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -176,10 +176,10 @@ public class App {
 		evaluateScheduleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if(expression.equals("X"))
+				if(getExpression().equals("X"))
 					new UserMetricsAnalyser(schedule.getMap(), database.getMap());
 				else
-					new UserMetricsAnalyser(schedule.getMap(), database.getMap(),expression);
+					new UserMetricsAnalyser(schedule.getMap(), database.getMap(),getExpression());
 			}
 		});
 
@@ -232,7 +232,7 @@ public class App {
 		}
 	}
 
-	private static void readTextFile(Scanner sc) {
+	static void readTextFile(Scanner sc) {
 		StringBuilder textMapping = new StringBuilder();
 		int i = 0;
 		while (sc.hasNextLine()) {
@@ -266,5 +266,9 @@ public class App {
 
 	public static ClassroomsInfo getDatabase() {
 		return database;
+	}
+
+	public static String getExpression() {
+		return expression;
 	}
 }

@@ -117,8 +117,8 @@ public class UserMetricsAnalyser extends JFrame {
 		if (JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression.replace(";"," "),
 				"Schedule Evaluator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
 				options[0]) == JOptionPane.YES_OPTION) {
-			showSchedule();
 			write(expression, new File(System.getProperty("user.home") + "\\Desktop\\ScheduleConfigurator.txt"));
+			showSchedule();
 		}
 	}
 

@@ -14,13 +14,53 @@ public class HTMLFileCreator {
 		File f = new File(path);
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("<!DOCTYPE html>\r\n" + "<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\r\n"
-				+ "	<head>\r\n" + "		<meta charset=\"utf-8\" />\r\n"
+		sb.append("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\r\n" + "	<head>\r\n"
+				+ "		<meta charset=\"utf-8\" />\r\n"
 				+ "		<link href=\"https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css\" rel=\"stylesheet\">\r\n"
 				+ "		<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js\"></script>\r\n"
-				+ "	</head>\r\n" + "	<body>\r\n" + "		<H1>Horário</H1>	\r\n"
-				+ "		<div id=\"example-table\"></div>\r\n" + "\r\n" + "		<script type=\"text/javascript\">\r\n"
-				+ "\r\n" + "			var tabledata = [\n");
+				+ "        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js\"></script>\r\n"
+				+ "	</head>\r\n" + "	<body>\r\n" + "		<H1>Tipos de Salas de Aula</H1>	\r\n" + "		<div>\r\n"
+				+ "			<select id=\"filter-field\">\r\n" + "			  <option></option>\r\n"
+				+ "			  <option value=\"course\">Curso</option>\r\n"
+				+ "			  <option value=\"curricularunit\">Unidade Curricular</option>\r\n"
+				+ "			  <option value=\"shift\">Turno</option>\r\n"
+				+ "              <option value=\"class\">Turma</option>\r\n"
+				+ "			  <option value=\"registeredonshift\">Inscritos no turno</option>\r\n"
+				+ "			  <option value=\"weekday\">Dia da semana</option>\r\n"
+				+ "              <option value=\"lessonstarttime\">Hora início da aula</option>\r\n"
+				+ "			  <option value=\"lessonendtime\">Hora fim da aula</option>\r\n"
+				+ "			  <option value=\"lessonday\">Data da aula</option>\r\n"
+				+ "              <option value=\"classroomrequirements\">Características da sala pedida para a aula</option>\r\n"
+				+ "			  <option value=\"classroomgiven\">Sala atribuída à aula</option>\r\n"
+				+ "			</select>\r\n" + "		  \r\n" + "			<select id=\"filter-type\">\r\n"
+				+ "			  <option value=\"=\">=</option>\r\n" + "			  <option value=\"<\"><</option>\r\n"
+				+ "			  <option value=\"<=\"><=</option>\r\n" + "			  <option value=\">\">></option>\r\n"
+				+ "			  <option value=\">=\">>=</option>\r\n" + "			  <option value=\"!=\">!=</option>\r\n"
+				+ "			  <option value=\"like\">like</option>\r\n" + "			</select>\r\n" + "		  \r\n"
+				+ "			<input id=\"filter-value\" type=\"text\" placeholder=\"value to filter\">\r\n"
+				+ "		  \r\n" + "			<button id=\"filter-clear\">Clear Filter</button>\r\n"
+				+ "		  </div>\r\n" + "		  \r\n" + "		  <div id=\"example-table\"></div>\r\n" + "\r\n"
+				+ "		<script type=\"text/javascript\">\r\n" + "\r\n" + "		\r\n"
+				+ "			//Define variables for input elements\r\n"
+				+ "var fieldEl = document.getElementById(\"filter-field\");\r\n"
+				+ "var typeEl = document.getElementById(\"filter-type\");\r\n"
+				+ "var valueEl = document.getElementById(\"filter-value\");\r\n" + "\r\n"
+				+ "//Trigger setFilter function with correct parameters\r\n" + "function updateFilter(){\r\n"
+				+ "  var filterVal = fieldEl.options[fieldEl.selectedIndex].value;\r\n"
+				+ "  var typeVal = typeEl.options[typeEl.selectedIndex].value;\r\n" + "\r\n"
+				+ "  var filter = filterVal == \"function\" ? customFilter : filterVal;\r\n" + "\r\n"
+				+ "  if(filterVal == \"function\" ){\r\n" + "    typeEl.disabled = true;\r\n"
+				+ "    valueEl.disabled = true;\r\n" + "  }else{\r\n" + "    typeEl.disabled = false;\r\n"
+				+ "    valueEl.disabled = false;\r\n" + "  }\r\n" + "\r\n" + "  if(filterVal){\r\n"
+				+ "    table.setFilter(filter,typeVal, valueEl.value);\r\n" + "  }\r\n" + "}\r\n" + "\r\n"
+				+ "//Update filters on value change\r\n"
+				+ "document.getElementById(\"filter-field\").addEventListener(\"change\", updateFilter);\r\n"
+				+ "document.getElementById(\"filter-type\").addEventListener(\"change\", updateFilter);\r\n"
+				+ "document.getElementById(\"filter-value\").addEventListener(\"keyup\", updateFilter);\r\n" + "\r\n"
+				+ "//Clear filters on \"Clear Filters\" button click\r\n"
+				+ "document.getElementById(\"filter-clear\").addEventListener(\"click\", function(){\r\n"
+				+ "  fieldEl.value = \"\";\r\n" + "  typeEl.value = \"=\";\r\n" + "  valueEl.value = \"\";\r\n" + "\r\n"
+				+ "  table.clearFilter();\r\n" + "});\r\n" + "\r\n" + "var tabledata = [");
 
 		for (int i = 0; i < schedule.getMap().get("Curso").size(); i++) {
 			String dayInfo = "{";
@@ -64,25 +104,25 @@ public class HTMLFileCreator {
 			}
 			sb.append(dayInfo + "},\n");
 		}
-		sb.append("];\r\n" + "			\r\n" + "			var table = new Tabulator(\"#example-table\", {\r\n"
-				+ "				data:tabledata,\r\n" + "				layout:\"fitDatafill\",\r\n"
-				+ "				pagination:\"local\",\r\n" + "				paginationSize:10,\r\n"
-				+ "				paginationSizeSelector:[5, 10, 20, 40],\r\n"
-				+ "				movableColumns:true,\r\n" + "				paginationCounter:\"rows\",\r\n"
-				+ "				initialSort:[{column:\"building\",dir:\"asc\"},],\r\n" + "				columns:[\r\n"
-				+ "					{title:\"Curso\", field:\"course\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Unidade Curricular\", field:\"curricularunit\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Turno\", field:\"shift\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Turma\", field:\"class\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Inscritos no turno\", field:\"registeredonshift\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Dia da semana\", field:\"weekday\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Hora início da aula\", field:\"lessonstarttime\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Hora fim da aula\", field:\"lessonendtime\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Data da aula\", field:\"lessonday\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Características da sala pedida para a aula\", field:\"classroomrequirements\", headerFilter:\"input\"},\r\n"
-				+ "					{title:\"Sala atribuída à aula\", field:\"classroomgiven\", headerFilter:\"input\"},\r\n"
+		sb.append("];\r\n" + "			\r\n" + "            var table = new Tabulator(\"#example-table\", {\r\n"
+				+ "	            data:tabledata,\r\n" + "	            layout:\"fitDatafill\",\r\n"
+				+ "	            pagination:\"local\",\r\n" + "	            paginationSize:10,\r\n"
+				+ "	            paginationSizeSelector:[5, 10, 20, 40],\r\n"
+				+ "	            movableColumns:true,\r\n" + "	            paginationCounter:\"rows\",\r\n"
+				+ "	            initialSort:[{column:\"building\",dir:\"asc\"},],\r\n" + "	            columns:[\r\n"
+				+ "		            {title:\"Curso\", field:\"course\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Unidade Curricular\", field:\"curricularunit\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Turno\", field:\"shift\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Turma\", field:\"class\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Inscritos no turno\", field:\"registeredonshift\", headerFilter:\"input\", mutator: (value, data, type, params, component) => parseInt(value)},\r\n"
+				+ "		            {title:\"Dia da semana\", field:\"weekday\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Hora início da aula\", field:\"lessonstarttime\", headerFilter:\"input\", accessor: (value, data, type, params, component) => new Date(\"1970-01-01T\" + value + \"Z\")},\r\n"
+				+ "		            {title:\"Hora fim da aula\", field:\"lessonendtime\", headerFilter:\"input\", accessor: (value, data, type, params, component) => new Date(\"1970-01-01T\" + value + \"Z\")},\r\n"
+				+ "		            {title:\"Data da aula\", field:\"lessonday\", headerFilter:\"input\", accessor: (value, data, type, params, component) => moment(value, \"DD/MM/YYYY\")},\r\n"
+				+ "		            {title:\"Características da sala pedida para a aula\", field:\"classroomrequirements\", headerFilter:\"input\"},\r\n"
+				+ "		            {title:\"Sala atribuída à aula\", field:\"classroomgiven\", headerFilter:\"input\"},\r\n"
 				+ "					\r\n" + "				],\r\n" + "			});\r\n" + "		</script>\r\n"
-				+ "		\r\n" + "	</body>\r\n" + "</html>\r\n");
+				+ "		\r\n" + "	</body>\r\n" + "</html>");
 
 		write(f, sb);
 		return f;
@@ -119,8 +159,9 @@ public class HTMLFileCreator {
 				+ "    <th>Características da sala pedida para a aula</th>\r\n"
 				+ "    <th>Sala atribuída à aula</th>\r\n" + "</tr>");
 
+		int lineCounter = 0;
 		for (int i = 0; i < sMap.get("Curso").size(); i++)
-			if (userMetrics.get(i))
+			if (userMetrics.get(i)) {
 				sb.append("<tr>\r\n" + "<td>" + sMap.get("Curso").get(i) + "</td>\r\n" + "<td>"
 						+ sMap.get("Unidade Curricular").get(i) + "</td>\r\n" + "<td>" + sMap.get("Turno").get(i)
 						+ "</td>\r\n" + "<td>" + sMap.get("Turma").get(i) + "</td>\r\n" + "<td>"
@@ -130,8 +171,10 @@ public class HTMLFileCreator {
 						+ sMap.get("Hora fim da aula").get(i) + "</td>\r\n" + "<td>" + sMap.get("Data da aula").get(i)
 						+ "</td>\r\n" + "<td>" + sMap.get("Características da sala pedida para a aula").get(i)
 						+ "</td>\r\n" + "<td>" + sMap.get("Sala atribuída à aula").get(i) + "</td>\r\n");
-
-		sb.append("</table>\r\n" + "\r\n" + "<div class=\"pagination\" id=\"pagination\">\r\n" + "</div>\r\n" + "\r\n"
+				lineCounter++;
+			}
+		sb.append("</table>\r\n" + "\r\n" + "<p>Total lines: " + lineCounter + "</p>\r\n"
+				+ "<div class=\"pagination\" id=\"pagination\">\r\n" + "</div>\r\n" + "\r\n"
 				+ "<div class=\"pagination-buttons\" id=\"paginationButtons\">\r\n" + "</div>\r\n" + "\r\n"
 				+ "<script>\r\n" + "document.addEventListener(\"DOMContentLoaded\", function () {\r\n"
 				+ "  var table = document.getElementById(\"myTable\");\r\n"

@@ -7,17 +7,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.JPanel;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 
 public class AppTest {
+	
+	private PrintStream originalSystemOut;
+    private ByteArrayOutputStream outputStream;
 
 	  /**
      * Tests the createHTMLFile method of the App class.
@@ -46,6 +54,9 @@ public class AppTest {
     @BeforeEach
     void setUp() {
         stdin = System.in;
+        originalSystemOut = System.out;
+        outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
     }
 
     @Test
@@ -65,7 +76,7 @@ public class AppTest {
     @Test
     void testSetUserConfiguration() throws IOException {
         File textFile = new File("C:\\Users\\Pedro\\Desktop\\ScheduleConfigurator.txt");
-        String userInput = "line1\nline2";
+        String userInput = "Aulas\nSalas";
         provideInput(userInput);
         App.setUserConfiguration(textFile);
     }
@@ -79,7 +90,39 @@ public class AppTest {
     
     @Test
     void testGetDatabase() {
-        assertNull(App.getDatabase());
+        assertNotNull(App.getDatabase());
+    }
+    
+    @Test
+    void testCreateOptionsPanel() {
+        JPanel panel = App.createOptionsPanel(new JPanel());
+        assertNotNull(panel);
+    }
+    
+    @Test
+    void testMain() {
+        provideInput("C:\\Users\\Pedro\\Desktop\\ScheduleConfigurator.txt");
+        assertDoesNotThrow(() -> App.main(null));
+        restoreInputAndOutput();
+    }
+
+    @Test
+    void testCreateMainPanel() {
+        JPanel panel = App.createMainPanel(new JPanel());
+        assertNotNull(panel);
+    }
+
+    @Test
+    void testCreateImportPanel() {
+        JPanel panel = App.createImportPanel(new JPanel());
+        assertNotNull(panel);
+    }
+    
+    @Test
+    void testReadTextFile() {
+        Scanner mockedScanner = new Scanner("line1\nline2");
+        App.readTextFile(mockedScanner);
+        assertEquals("X", App.getExpression());
     }
     
     private void provideOutput() {
@@ -93,26 +136,16 @@ public class AppTest {
     private void provideInput(String data) {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
     }
+    
+    private void restoreInputAndOutput() {
+        System.setIn(stdin);
+        System.setOut(originalSystemOut);
+    }
 
     @AfterEach
     void tearDown() {
         System.setIn(stdin);
     }
-
-    /*
-    @Test
-    void testAnalyse() {
-        Schedule schedule = Schedule.createScheduleByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
-        ClassroomsInfo classroomsInfo = ClassroomsInfo.createClassroomsInfoByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/CaracterizacaoSalas.csv");
-        List<Integer> overCapacity = new ArrayList<>();
-        List<Boolean> matchRequirements = new ArrayList<>();
-        List<Integer> featuresNotUsed = new ArrayList<>();
-        List<Boolean> classWithoutRoom = new ArrayList<>();
-        App.analyse(schedule, classroomsInfo, overCapacity, matchRequirements, featuresNotUsed, classWithoutRoom);
-
-        // Adicionar após poder analisar ficheiro
-    }
-*/
 
     @Test
     public void testReadFile() {
