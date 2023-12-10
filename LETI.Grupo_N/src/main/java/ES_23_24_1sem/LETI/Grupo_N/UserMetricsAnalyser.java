@@ -43,7 +43,7 @@ public class UserMetricsAnalyser extends JFrame {
 		showSchedule();
 	}
 
-	private String[] getFields() {
+	String[] getFields() {
 		List<String> fieldList = new ArrayList<>();
 		fieldList.add("--");
 		fieldList.addAll(sMap.keySet());
@@ -111,7 +111,7 @@ public class UserMetricsAnalyser extends JFrame {
 		repaint();
 	}
 
-	private void calculate() {
+	void calculate() {
 		Object[] options = { "Yes, Show Results", "Cancel" };
 		expression += getSelectedItems() + fieldResult.getText();
 		if (JOptionPane.showOptionDialog(this, "Is this the expression you want to run?\n" + expression.replace(";"," "),
@@ -140,7 +140,7 @@ public class UserMetricsAnalyser extends JFrame {
 		System.exit(0);
 	}
 
-	private String getSelectedItems() {
+	String getSelectedItems() {
 		StringBuilder sb = new StringBuilder();
 		for (JComboBox<String> box : boxes) {
 			sb.append(box.getSelectedItem()).append(";");

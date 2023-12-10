@@ -1,13 +1,21 @@
 package ES_23_24_1sem.LETI.Grupo_N;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileWriter;
 
 public class AppTest {
 
@@ -21,7 +29,7 @@ public class AppTest {
      */
     @Test
     public void testCreateHTMLFile() throws IOException {
-    	Schedule schedule = Schedule.createScheduleByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
+    	Schedule schedule = Schedule.createScheduleByRemoteFile("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv", "Curso->Curso\nUnidade Curricular->Unidade Curricular\nTurno->Turno\nTurma->Turma\nInscritos no turno->Inscritos no turno\nDia da semana->Dia da semana\nHora início da aula->Hora início da aula\nHora fim da aula->Hora fim da aula\nData da aula->Data da aula\nCaracterísticas da sala pedida para a aula->Características da sala pedida para a aula\nSala atribuída à aula->Sala atribuída à aula");
         File htmlFile = HTMLFileCreator.createSchedule(schedule);
         assertNotNull(htmlFile);
         assertTrue(htmlFile.exists());
@@ -33,26 +41,62 @@ public class AppTest {
         File htmlFile = new File("Test_Open.html");
         assertDoesNotThrow(() -> App.openWebPage(htmlFile));
     }
+    private InputStream stdin;
+
+    @BeforeEach
+    void setUp() {
+        stdin = System.in;
+    }
 
     @Test
-    void testIsClassWithoutRoom() {
-        assertTrue(App.isClassWithoutRoom(createScheduleMapWithoutRoom(), 0));
-        assertFalse(App.isClassWithoutRoom(createScheduleMapWithRoom(), 0));
+    void testGetScheduleLocal() {
+        provideInput("Testes_JUnit.csv");
+        Schedule schedule = App.getSchedule("l");
+        assertNotNull(schedule);
+    }
+
+    @Test
+    void testGetScheduleRemote() {
+        provideInput("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
+        Schedule schedule = App.getSchedule("r");
+        assertNotNull(schedule);
+    }
+
+    @Test
+    void testSetUserConfiguration() throws IOException {
+        File textFile = new File("C:\\Users\\Pedro\\Desktop\\ScheduleConfigurator.txt");
+        String userInput = "line1\nline2";
+        provideInput(userInput);
+        App.setUserConfiguration(textFile);
+    }
+
+    @Test
+    void testOpenWebPage_app() {
+        provideOutput();
+        File htmlFile = new File("Test_Open.html");
+        assertDoesNotThrow(() -> App.openWebPage(htmlFile));
     }
     
     @Test
-    void testNoRoomRequested() {
-        LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
-        map.put("Características da sala pedida para a aula", Arrays.asList("Não necessita de sala"));
-        assertNull(App.getRoomRequirements(map, 0));
+    void testGetDatabase() {
+        assertNull(App.getDatabase());
+    }
+    
+    private void provideOutput() {
+        System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
+            @Override
+            public void write(int b) {
+            }
+        }));
+    }
+    
+    private void provideInput(String data) {
+        System.setIn(new ByteArrayInputStream(data.getBytes()));
     }
 
-    @Test
-    void testRoomRequested() {
-        LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
-        map.put("Características da sala pedida para a aula", Arrays.asList("Grande/Auditório"));
-        List<String> expectedRequirements = Arrays.asList("Grande", "Auditório");
-        assertEquals(expectedRequirements, App.getRoomRequirements(map, 0));
+    @AfterEach
+    void tearDown() {
+        System.setIn(stdin);
     }
 
     /*
@@ -69,18 +113,66 @@ public class AppTest {
         // Adicionar após poder analisar ficheiro
     }
 */
-    
-    private LinkedHashMap<String, List<String>> createScheduleMapWithoutRoom() {
-        LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
-        map.put("Sala atribuída à aula", Arrays.asList("N/A", "N/A"));
-        map.put("Características da sala pedida para a aula", Arrays.asList("Exame", "laboratório"));
-        return map;
+
+    @Test
+    public void testReadFile() {
+        String fileData = "Name;Age;City\nJohn;25;New York\nAlice;30;London";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData.getBytes());
+        Scanner mockScanner = new Scanner(inputStream);
+        HashData hashData = new HashDataImpl();
+        hashData.setLabels(new String[] { "Name", "Age", "City" });
+        hashData.readFile(mockScanner);
+        assertEquals("John", hashData.getMap().get("Name").get(0));
+        assertEquals("25", hashData.getMap().get("Age").get(0));
+        assertEquals("New York", hashData.getMap().get("City").get(0));
+        assertEquals("Alice", hashData.getMap().get("Name").get(1));
+        assertEquals("30", hashData.getMap().get("Age").get(1));
+        assertEquals("London", hashData.getMap().get("City").get(1));
     }
 
-    private LinkedHashMap<String, List<String>> createScheduleMapWithRoom() {
-        LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
-        map.put("Sala atribuída à aula", Arrays.asList("Sala1", "Sala2"));
-        map.put("Características da sala pedida para a aula", Arrays.asList("Exame", "laboratório"));
-        return map;
+    @Test
+    public void testGetMap() {
+        HashData hashData = new HashDataImpl();
+        assertTrue(hashData.getMap().isEmpty());
+        hashData.getMap().put("Key", new ArrayList<String>());
+        hashData.getMap().get("Key").add("Value");
+        assertFalse(hashData.getMap().isEmpty());
+        assertEquals("Value", hashData.getMap().get("Key").get(0));
     }
+
+    @Test
+    public void testSetMap() {
+        HashData hashData = new HashDataImpl();
+        LinkedHashMap<String, List<String>> newMap = new LinkedHashMap<>();
+        newMap.put("NewKey", new ArrayList<>());
+        newMap.get("NewKey").add("NewValue");
+        hashData.setMap(newMap);
+        assertEquals(newMap, hashData.getMap());
+    }
+
+    @Test
+    public void testGetMapSize() {
+        HashData hashData = new HashDataImpl();
+        hashData.setLabels(new String[] { "Name", "Age", "City" });
+        assertEquals(3, hashData.getMapSize());
+    }
+
+    @Test
+    public void testGetLabels() {
+        HashData hashData = new HashDataImpl();
+        String[] labels = { "Name", "Age", "City" };
+        hashData.setLabels(labels);
+        assertArrayEquals(labels, hashData.getLabels());
+    }
+
+    @Test
+    public void testSetLabels() {
+        HashData hashData = new HashDataImpl();
+        String[] labels = { "Name", "Age", "City" };
+        hashData.setLabels(labels);
+        assertArrayEquals(labels, hashData.getLabels());
+    }
+
+ 
+    private static class HashDataImpl extends HashData {}
 }

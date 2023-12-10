@@ -17,7 +17,8 @@ class testImport {
 	  @Test
 	    void testCreateScheduleByLocalFile() {
 	        String path = "Testes_JUnit.csv";
-	        Schedule schedule = Schedule.createScheduleByLocalFile(path);
+	        String map = "nome->nome\nidade->idade\ntransporte->transporte";
+	        Schedule schedule = Schedule.createScheduleByLocalFile(path, map);
 	        assertFalse(schedule.getMap().isEmpty());
 	        LinkedHashMap<String, List<String>> expectedContent = new LinkedHashMap<>();
 	        expectedContent.put("nome", Arrays.asList("João", "Pedro", "Vicente"));
@@ -36,7 +37,8 @@ class testImport {
 	    @Test
 	    void testCreateScheduleByRemoteFile() {
 	        String urlStr = "https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/LETI.Grupo_N/Testes_JUnit.csv";
-	        Schedule schedule = Schedule.createScheduleByRemoteFile(urlStr);
+	        String map = "nome->nome\nidade->idade\ntransporte->transporte";
+	        Schedule schedule = Schedule.createScheduleByRemoteFile(urlStr, map);
 	        assertFalse(schedule.getMap().isEmpty());
 	        LinkedHashMap<String, List<String>> expectedContent = new LinkedHashMap<>();
 	        expectedContent.put("nome", Arrays.asList("João", "Pedro", "Vicente"));

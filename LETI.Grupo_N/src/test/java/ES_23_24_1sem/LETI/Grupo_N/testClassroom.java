@@ -3,7 +3,7 @@ package ES_23_24_1sem.LETI.Grupo_N;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-class testClassrrom {
+class testClassroom {
 
     @Test
     void testCreateClassroomsInfoByLocalFile() {

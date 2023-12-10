@@ -197,7 +197,7 @@ public class App {
 		return panel;
 	}
 
-	private static Schedule getSchedule(String option) {
+	static Schedule getSchedule(String option) {
 		String input;
 
 		switch (option) {

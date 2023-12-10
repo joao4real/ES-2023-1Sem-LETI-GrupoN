@@ -8,7 +8,7 @@ public class Calculator {
 
 	private String type;
 	private String[] data;
-	private List<Boolean> list = new ArrayList<>();
+	List<Boolean> list = new ArrayList<>();
 	private HashMap<String, List<String>> sMap;
 	private HashMap<String, List<String>> cMap;
 
@@ -71,7 +71,7 @@ public class Calculator {
 		return list;
 	}
 
-	private void calculateDate() {
+	void calculateDate() {
 		for (int i = 0; i < sMap.get("Curso").size(); i++) {
 			Date d = new Date(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
 			list.add(sMap.get(data[0]).get(i) == "N/A" ? false
@@ -79,7 +79,7 @@ public class Calculator {
 		}
 	}
 
-	private void calculateTime() {
+	void calculateTime() {
 		for (int i = 0; i < sMap.get("Curso").size(); i++) {
 			Time d = new Time(sMap.get(data[2]) != null ? sMap.get(data[2]).get(i) : data[2]);
 			list.add(sMap.get(data[0]).get(i) == "N/A" ? false
@@ -87,7 +87,7 @@ public class Calculator {
 		}
 	}
 
-	private void calculateString() {
+	void calculateString() {
 		for (int i = 0; i < sMap.get("Curso").size(); i++) {
 			String[] s1 = smartSplit(sMap.get(data[0]).get(i));
 			String[] s2 = sMap.get(data[2]) != null ? smartSplit(sMap.get(data[2]).get(i)) : new String[] { data[2] };
@@ -109,7 +109,7 @@ public class Calculator {
 		return s.split("/");
 	}
 
-	private void calculateInt() {
+	void calculateInt() {
 		for (int i = 0; i < sMap.get("Curso").size(); i++) {
 			int a = intSolver(i);
 			int j = cMap.get("Nome sala").indexOf(sMap.get("Sala atribuída à aula").get(i));

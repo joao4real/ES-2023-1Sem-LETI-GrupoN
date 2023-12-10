@@ -33,7 +33,7 @@ public abstract class HashData {
 	 * @return The array of strings.
 	 */
 
-	private String[] my_split(String line) {
+	String[] my_split(String line) {
 		String[] arr = new String[getMapSize()];
 		int i, s, f;
 		i = s = f = 0;
