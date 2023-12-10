@@ -116,18 +116,18 @@ public class AppTest {
 
     @Test
     public void testReadFile() {
-        String fileData = "Name;Age;City\nJohn;25;New York\nAlice;30;London";
+        String fileData = "Nome;Idade;Cidade\nJoão;25;Porto\nPedro;30;Almada";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData.getBytes());
         Scanner mockScanner = new Scanner(inputStream);
         HashData hashData = new HashDataImpl();
-        hashData.setLabels(new String[] { "Name", "Age", "City" });
+        hashData.setLabels(new String[] { "Nome", "Idade", "Cidade" });
         hashData.readFile(mockScanner);
-        assertEquals("John", hashData.getMap().get("Name").get(0));
-        assertEquals("25", hashData.getMap().get("Age").get(0));
-        assertEquals("New York", hashData.getMap().get("City").get(0));
-        assertEquals("Alice", hashData.getMap().get("Name").get(1));
-        assertEquals("30", hashData.getMap().get("Age").get(1));
-        assertEquals("London", hashData.getMap().get("City").get(1));
+        assertEquals("João", hashData.getMap().get("Nome").get(0));
+        assertEquals("25", hashData.getMap().get("Idade").get(0));
+        assertEquals("Porto", hashData.getMap().get("Cidade").get(0));
+        assertEquals("Pedro", hashData.getMap().get("Nome").get(1));
+        assertEquals("30", hashData.getMap().get("Idade").get(1));
+        assertEquals("Almada", hashData.getMap().get("Cidade").get(1));
     }
 
     @Test
@@ -135,9 +135,9 @@ public class AppTest {
         HashData hashData = new HashDataImpl();
         assertTrue(hashData.getMap().isEmpty());
         hashData.getMap().put("Key", new ArrayList<String>());
-        hashData.getMap().get("Key").add("Value");
+        hashData.getMap().get("Key").add("Salas");
         assertFalse(hashData.getMap().isEmpty());
-        assertEquals("Value", hashData.getMap().get("Key").get(0));
+        assertEquals("Salas", hashData.getMap().get("Key").get(0));
     }
 
     @Test
@@ -153,14 +153,14 @@ public class AppTest {
     @Test
     public void testGetMapSize() {
         HashData hashData = new HashDataImpl();
-        hashData.setLabels(new String[] { "Name", "Age", "City" });
+        hashData.setLabels(new String[] { "Nome", "Idade", "Cidade" });
         assertEquals(3, hashData.getMapSize());
     }
 
     @Test
     public void testGetLabels() {
         HashData hashData = new HashDataImpl();
-        String[] labels = { "Name", "Age", "City" };
+        String[] labels = { "Nome", "Idade", "Cidade" };
         hashData.setLabels(labels);
         assertArrayEquals(labels, hashData.getLabels());
     }
@@ -168,7 +168,7 @@ public class AppTest {
     @Test
     public void testSetLabels() {
         HashData hashData = new HashDataImpl();
-        String[] labels = { "Name", "Age", "City" };
+        String[] labels = { "Nome", "Idade", "Cidade" };
         hashData.setLabels(labels);
         assertArrayEquals(labels, hashData.getLabels());
     }
