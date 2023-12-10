@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * The UserMetricsAnalyser class provides a GUI for creating and evaluating expressions related to schedule metrics.
+ */
 public class UserMetricsAnalyser extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -28,6 +31,12 @@ public class UserMetricsAnalyser extends JFrame {
 	private String expression = "";
 	private boolean allowToCreate = true;
 
+	/**
+     * Constructs a UserMetricsAnalyser object with schedule and course maps.
+     *
+     * @param sMap The schedule map.
+     * @param cMap The course map.
+     */
 	public UserMetricsAnalyser(LinkedHashMap<String, List<String>> sMap, LinkedHashMap<String, List<String>> cMap) {
 		this.sMap = sMap;
 		this.cMap = cMap;
@@ -35,6 +44,13 @@ public class UserMetricsAnalyser extends JFrame {
 		initialize();
 	}
 
+	/**
+     * Constructs a UserMetricsAnalyser object with schedule and course maps and a predefined expression.
+     *
+     * @param sMap       The schedule map.
+     * @param cMap       The course map.
+     * @param expression The predefined expression.
+     */
 	public UserMetricsAnalyser(LinkedHashMap<String, List<String>> sMap, LinkedHashMap<String, List<String>> cMap,
 			String expression) {
 		this.sMap = sMap;
@@ -43,6 +59,11 @@ public class UserMetricsAnalyser extends JFrame {
 		showSchedule();
 	}
 
+	/**
+     * Gets the list of fields for the schedule and course maps.
+     *
+     * @return An array of field names.
+     */
 	String[] getFields() {
 		List<String> fieldList = new ArrayList<>();
 		fieldList.add("--");
@@ -51,6 +72,9 @@ public class UserMetricsAnalyser extends JFrame {
 		return fieldList.toArray(new String[0]);
 	}
 
+	 /**
+     * Initializes the UserMetricsAnalyser GUI.
+     */
 	private void initialize() {
 		setTitle("Schedule Evaluator");
 		setSize(1500, 200);
@@ -86,11 +110,17 @@ public class UserMetricsAnalyser extends JFrame {
 		setVisible(true);
 	}
 
+	/**
+     * Creates the next combo box based on user input.
+     */
 	public void createNextComboBox() {
 		if (boxes.isEmpty() || !boxes.get(boxes.size() - 1).getSelectedItem().equals("--"))
 			addComboBox();
 	}
 
+	/**
+     * Adds a JTextfield for entering a result.
+     */
 	private void addJText() {
 		fieldResult = new JTextField();
 		fieldResult.setPreferredSize(COMPONENT_SIZE);
@@ -102,6 +132,9 @@ public class UserMetricsAnalyser extends JFrame {
 		repaint();
 	}
 
+	/**
+     * Adds a combo box to the GUI.
+     */
 	private void addComboBox() {
 		JComboBox<String> newComboBox = createComboBox((boxCounter % 2 != 0) ? operators : fields);
 		boxCounter++;
@@ -111,6 +144,9 @@ public class UserMetricsAnalyser extends JFrame {
 		repaint();
 	}
 
+	/**
+     * Calculates the expression and shows the schedule.
+     */
 	void calculate() {
 		Object[] options = { "Yes, Show Results", "Cancel" };
 		expression += getSelectedItems() + fieldResult.getText();
@@ -122,6 +158,12 @@ public class UserMetricsAnalyser extends JFrame {
 		}
 	}
 
+	/**
+     * Writes the expression to a file.
+     *
+     * @param expression The expression to write.
+     * @param file       The file to write to.
+     */
 	private void write(String expression, File file) {
 
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
@@ -134,13 +176,21 @@ public class UserMetricsAnalyser extends JFrame {
 
 	}
 
+	/**
+     * Shows the schedule based on the calculated expression.
+     */
 	private void showSchedule() {
 		App.openWebPage(
 				HTMLFileCreator.createScheduleEvaluator(sMap, new Calculator(sMap, cMap, expression).calculate()));
 		System.exit(0);
 	}
 
-	String getSelectedItems() {
+	/**
+     * Gets the selected items from the combo boxes.
+     *
+     * @return A string containing the selected items.
+     */
+	public String getSelectedItems() {
 		StringBuilder sb = new StringBuilder();
 		for (JComboBox<String> box : boxes) {
 			sb.append(box.getSelectedItem()).append(";");
@@ -148,6 +198,13 @@ public class UserMetricsAnalyser extends JFrame {
 		return sb.toString();
 	}
 
+	/**
+     * Creates a JComboBox with the specified items.
+     *
+     * @param <T>   The type of items.
+     * @param items The items for the combo box.
+     * @return A JComboBox.
+     */
 	private static <T> JComboBox<T> createComboBox(T[] items) {
 		JComboBox<T> comboBox = new JComboBox<>(items);
 		comboBox.setMaximumSize(COMPONENT_SIZE);
@@ -155,6 +212,12 @@ public class UserMetricsAnalyser extends JFrame {
 		return comboBox;
 	}
 
+	/**
+     * Checks if the provided string is an operator in an equation.
+     *
+     * @param s The string to check.
+     * @return true if the string is an operator, false otherwise.
+     */
 	private static boolean isEquationElement(String s) {
 		return (s.equals(">=") || s.equals("<=") || s.equals(">") || s.equals("<") || s.equals("=") || s.equals("!="));
 	}

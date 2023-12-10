@@ -6,8 +6,18 @@ import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * The HTMLFileCreator class provides methods to create HTML files for schedules and schedule evaluators.
+ */
 public class HTMLFileCreator {
 
+	/**
+     * Creates an HTML file for the given schedule.
+     *
+     * @param schedule The schedule for which the HTML file is created.
+     * @return The created HTML file.
+     * @throws IOException If an I/O error occurs while creating the file.
+     */
 	public static File createSchedule(Schedule schedule) throws IOException {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\Schedule.html";
@@ -128,6 +138,13 @@ public class HTMLFileCreator {
 		return f;
 	}
 
+	/**
+     * Creates an HTML file for schedule evaluation based on user metrics.
+     *
+     * @param sMap        A LinkedHashMap containing schedule information.
+     * @param userMetrics A list of Boolean values representing user metrics for each schedule entry.
+     * @return The created HTML file for schedule evaluation.
+     */
 	public static File createScheduleEvaluator(LinkedHashMap<String, List<String>> sMap, List<Boolean> userMetrics) {
 
 		String path = System.getProperty("user.home") + "\\Desktop\\ScheduleEvaluator.html";
@@ -224,6 +241,12 @@ public class HTMLFileCreator {
 		return f;
 	}
 
+	  /**
+     * Writes the HTML content to a specified file.
+     *
+     * @param f  The file to which the HTML content is written.
+     * @param sb The StringBuilder containing the HTML content.
+     */
 	public static void write(File f, StringBuilder sb) {
 		// Write the HTML content to a file
 		try {

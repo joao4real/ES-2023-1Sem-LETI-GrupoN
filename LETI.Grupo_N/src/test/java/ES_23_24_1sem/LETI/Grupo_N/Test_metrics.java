@@ -11,12 +11,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Test class for testing the functionality of the UserMetricsAnalyser class.
+ */
 public class Test_metrics {
 
     private UserMetricsAnalyser userMetricsAnalyser;
     private LinkedHashMap<String, List<String>> sMap;
     private LinkedHashMap<String, List<String>> cMap;
 
+    /**
+     * Sets up the test environment before each test method is executed.
+     * Initializes necessary objects and data structures.
+     */
     @BeforeEach
     public void setUp() {
         sMap = new LinkedHashMap<>();
@@ -28,6 +35,11 @@ public class Test_metrics {
         userMetricsAnalyser = new UserMetricsAnalyser(sMap, cMap);
     }
 
+    /**
+     * Tests the getFields method of the UserMetricsAnalyser class.
+     * <p>
+     * This test checks if the getFields method returns the expected array of fields.
+     */
     @Test
     public void testGetFields() {
         String[] fields = userMetricsAnalyser.getFields();
@@ -37,6 +49,11 @@ public class Test_metrics {
         assertEquals("testKey", fields[2]);
     }
 
+    /**
+     * Tests the initialize method of the UserMetricsAnalyser class.
+     * <p>
+     * This test checks if the UserMetricsAnalyser object is successfully initialized.
+     */
     @Test
     public void testInitialize() {
         assertNotNull(userMetricsAnalyser);

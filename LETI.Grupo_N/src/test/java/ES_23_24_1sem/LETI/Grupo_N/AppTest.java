@@ -26,6 +26,7 @@ public class AppTest {
 	
 	private PrintStream originalSystemOut;
     private ByteArrayOutputStream outputStream;
+    private InputStream stdin;
 
 	  /**
      * Tests the createHTMLFile method of the App class.
@@ -44,13 +45,22 @@ public class AppTest {
         assertTrue(htmlFile.isFile());
     }
     
+    /**
+     * Tests the openWebPage method of the App class.
+     * <p>
+     * This test checks if the openWebPage method does not throw an exception when given a valid HTML file.
+     */
     @Test
     void testOpenWebPage() {
         File htmlFile = new File("Test_Open.html");
         assertDoesNotThrow(() -> App.openWebPage(htmlFile));
     }
-    private InputStream stdin;
+    
+    
 
+    /**
+     * Sets up the input stream before each test.
+     */
     @BeforeEach
     void setUp() {
         stdin = System.in;
@@ -59,6 +69,11 @@ public class AppTest {
         System.setOut(new PrintStream(outputStream));
     }
 
+    /**
+     * Tests the getSchedule method of the App class for a local file.
+     * <p>
+     * This test checks if the getSchedule method returns a non-null Schedule object when provided with a valid local file path.
+     */
     @Test
     void testGetScheduleLocal() {
         provideInput("Testes_JUnit.csv");
@@ -66,6 +81,11 @@ public class AppTest {
         assertNotNull(schedule);
     }
 
+    /**
+     * Tests the getSchedule method of the App class for a remote file.
+     * <p>
+     * This test checks if the getSchedule method returns a non-null Schedule object when provided with a valid remote file URL.
+     */
     @Test
     void testGetScheduleRemote() {
         provideInput("https://raw.githubusercontent.com/joao4real/ES-2023-1Sem-LETI-GrupoN/main/HorarioDeExemplo.csv");
@@ -73,6 +93,13 @@ public class AppTest {
         assertNotNull(schedule);
     }
 
+    /**
+     * Tests the setUserConfiguration method of the App class.
+     * <p>
+     * This test checks if the setUserConfiguration method does not throw an exception when provided with valid input.
+     *
+     * @throws IOException If an input/output exception occurs.
+     */
     @Test
     void testSetUserConfiguration() throws IOException {
         File textFile = new File("C:\\Users\\Pedro\\Desktop\\ScheduleConfigurator.txt");
@@ -81,6 +108,11 @@ public class AppTest {
         App.setUserConfiguration(textFile);
     }
 
+    /**
+     * Tests the openWebPage method of the App class (variant for app).
+     * <p>
+     * This test checks if the openWebPage method does not throw an exception when given a valid HTML file (variant for app).
+     */
     @Test
     void testOpenWebPage_app() {
         provideOutput();
@@ -88,17 +120,32 @@ public class AppTest {
         assertDoesNotThrow(() -> App.openWebPage(htmlFile));
     }
     
+    /**
+     * Tests the getDatabase method of the App class.
+     * <p>
+     * This test checks if the getDatabase method returns a non-null object.
+     */
     @Test
     void testGetDatabase() {
         assertNotNull(App.getDatabase());
     }
     
+    /**
+     * Tests the createOptionsPanel method of the App class.
+     * <p>
+     * This test checks if the createOptionsPanel method returns a non-null JPanel object.
+     */
     @Test
     void testCreateOptionsPanel() {
         JPanel panel = App.createOptionsPanel(new JPanel());
         assertNotNull(panel);
     }
     
+    /**
+     * Tests the main method of the App class.
+     * <p>
+     * This test checks if the main method does not throw an exception when provided with a valid input.
+     */
     @Test
     void testMain() {
         provideInput("C:\\Users\\Pedro\\Desktop\\ScheduleConfigurator.txt");
@@ -106,18 +153,33 @@ public class AppTest {
         restoreInputAndOutput();
     }
 
+    /**
+     * Tests the createMainPanel method of the App class.
+     * <p>
+     * This test checks if the createMainPanel method returns a non-null JPanel object.
+     */
     @Test
     void testCreateMainPanel() {
         JPanel panel = App.createMainPanel(new JPanel());
         assertNotNull(panel);
     }
 
+    /**
+     * Tests the createImportPanel method of the App class.
+     * <p>
+     * This test checks if the createImportPanel method returns a non-null JPanel object.
+     */
     @Test
     void testCreateImportPanel() {
         JPanel panel = App.createImportPanel(new JPanel());
         assertNotNull(panel);
     }
     
+    /**
+     * Tests the readTextFile method of the App class.
+     * <p>
+     * This test checks if the readTextFile method reads input from a Scanner and sets the expression in the App class.
+     */
     @Test
     void testReadTextFile() {
         Scanner mockedScanner = new Scanner("line1\nline2");
@@ -125,6 +187,9 @@ public class AppTest {
         assertEquals("X", App.getExpression());
     }
     
+    /**
+     * Provides a way to suppress the output stream.
+     */
     private void provideOutput() {
         System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
             @Override
@@ -133,20 +198,36 @@ public class AppTest {
         }));
     }
     
+    /**
+     * Provides input data to the System.in stream.
+     *
+     * @param data The data to be provided as input.
+     */
     private void provideInput(String data) {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
     }
     
+    /**
+     * Restores the original input and output streams.
+     */
     private void restoreInputAndOutput() {
         System.setIn(stdin);
         System.setOut(originalSystemOut);
     }
 
+    /**
+     * Tears down the input stream after each test.
+     */
     @AfterEach
     void tearDown() {
         System.setIn(stdin);
     }
 
+    /**
+     * Tests the readFile method of the App class.
+     * <p>
+     * This test checks if the readFile method reads input from a Scanner and populates a HashData object accordingly.
+     */
     @Test
     public void testReadFile() {
         String fileData = "Nome;Idade;Cidade\nJoão;25;Porto\nPedro;30;Almada";
@@ -163,6 +244,11 @@ public class AppTest {
         assertEquals("Almada", hashData.getMap().get("Cidade").get(1));
     }
 
+    /**
+     * Tests the getMap method of the HashDataImpl class.
+     * <p>
+     * This test checks if the getMap method returns the expected results.
+     */
     @Test
     public void testGetMap() {
         HashData hashData = new HashDataImpl();
@@ -173,6 +259,11 @@ public class AppTest {
         assertEquals("Salas", hashData.getMap().get("Key").get(0));
     }
 
+    /**
+     * Tests the setMap method of the HashDataImpl class.
+     * <p>
+     * This test checks if the setMap method sets the map in the HashDataImpl class as expected.
+     */
     @Test
     public void testSetMap() {
         HashData hashData = new HashDataImpl();
@@ -183,6 +274,11 @@ public class AppTest {
         assertEquals(newMap, hashData.getMap());
     }
 
+    /**
+     * Tests the getMapSize method of the HashDataImpl class.
+     * <p>
+     * This test checks if the getMapSize method returns the expected size of the map in the HashDataImpl class.
+     */
     @Test
     public void testGetMapSize() {
         HashData hashData = new HashDataImpl();
@@ -190,6 +286,11 @@ public class AppTest {
         assertEquals(3, hashData.getMapSize());
     }
 
+    /**
+     * Tests the getLabels method of the HashDataImpl class.
+     * <p>
+     * This test checks if the getLabels method returns the expected labels in the HashDataImpl class.
+     */
     @Test
     public void testGetLabels() {
         HashData hashData = new HashDataImpl();
@@ -198,6 +299,11 @@ public class AppTest {
         assertArrayEquals(labels, hashData.getLabels());
     }
 
+    /**
+     * Tests the setLabels method of the HashDataImpl class.
+     * <p>
+     * This test checks if the setLabels method sets the labels in the HashDataImpl class as expected.
+     */
     @Test
     public void testSetLabels() {
         HashData hashData = new HashDataImpl();
@@ -206,6 +312,8 @@ public class AppTest {
         assertArrayEquals(labels, hashData.getLabels());
     }
 
- 
+    /**
+     * A concrete implementation of the HashData abstract class for testing purposes.
+     */
     private static class HashDataImpl extends HashData {}
 }

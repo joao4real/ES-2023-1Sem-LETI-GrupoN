@@ -29,6 +29,12 @@ public class App {
 	private static String mapping = "X";
 	private static String expression = "X";
 
+	/**
+     * The main method of the application.
+     *
+     * @param args Command-line arguments (not used).
+     * @throws IOException If an input/output exception occurs.
+     */
 	public static void main(String[] args) throws IOException {
 
 		frame = new JFrame("Schedule Analyser");
@@ -56,6 +62,12 @@ public class App {
 		frame.setVisible(true);
 	}
 
+	/**
+     * Creates the main panel of the application.
+     *
+     * @param cardPanel The card panel to switch between different panels.
+     * @return The main panel.
+     */
 	static JPanel createMainPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -98,6 +110,12 @@ public class App {
 		return panel;
 	}
 
+	/**
+     * Creates the import panel of the application.
+     *
+     * @param cardPanel The card panel to switch between different panels.
+     * @return The import panel.
+     */
 	static JPanel createImportPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -140,6 +158,12 @@ public class App {
 		return panel;
 	}
 
+	/**
+     * Creates the options panel of the application.
+     *
+     * @param cardPanel The card panel to switch between different panels.
+     * @return The options panel.
+     */
 	static JPanel createOptionsPanel(JPanel cardPanel) {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -197,6 +221,12 @@ public class App {
 		return panel;
 	}
 
+	/**
+     * Retrieves a Schedule object based on the specified option (local or remote).
+     *
+     * @param option The import option ("l" for local, "r" for remote).
+     * @return The Schedule object.
+     */
 	static Schedule getSchedule(String option) {
 		String input;
 
@@ -221,6 +251,11 @@ public class App {
 		}
 	}
 
+	/**
+     * Sets the user configuration based on the provided text file.
+     *
+     * @param textFile The text file containing user configuration.
+     */
 	public static void setUserConfiguration(File textFile) {
 
 		try {
@@ -232,6 +267,11 @@ public class App {
 		}
 	}
 
+	/**
+     * Reads the content of a text file and sets the mapping and expression.
+     *
+     * @param sc The scanner for reading the text file.
+     */
 	static void readTextFile(Scanner sc) {
 		StringBuilder textMapping = new StringBuilder();
 		int i = 0;
@@ -245,6 +285,11 @@ public class App {
 		mapping = textMapping.toString();
 	}
 
+	/**
+     * Opens the default web browser to display the generated HTML schedule file.
+     *
+     * @param htmlFile The HTML file to be opened.
+     */
 	public static void openWebPage(File htmlFile) {
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
@@ -260,14 +305,29 @@ public class App {
 		}
 	}
 
+	/**
+     * Retrieves the current schedule.
+     *
+     * @return The current Schedule object.
+     */
 	public static Schedule getSchedule() {
 		return schedule;
 	}
 
+	/**
+     * Retrieves the database information.
+     *
+     * @return The ClassroomsInfo object representing the database.
+     */
 	public static ClassroomsInfo getDatabase() {
 		return database;
 	}
 
+	 /**
+     * Retrieves the user expression for evaluating the schedule.
+     *
+     * @return The user expression.
+     */
 	public static String getExpression() {
 		return expression;
 	}

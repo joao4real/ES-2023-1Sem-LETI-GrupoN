@@ -8,9 +8,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Test class Test_calculadora for testing the functionality of the Calculator class.
+ */
 public class Test_calculadora {
 	
-
+	/**
+     * Tests the calculateString method of the Calculator class.
+     * <p>
+     * This test checks if the calculateString method correctly evaluates the string expression against the provided maps.
+     * The expected result is a list of Booleans corresponding to the evaluation of each item in the maps.
+     */
 	 @Test
 	    void testCalculateString() {
 	        HashMap<String, List<String>> sMap = new HashMap<>();
@@ -24,6 +32,12 @@ public class Test_calculadora {
 	        assertEquals(Arrays.asList(true, false, false), result);
 	    }
 
+	 /**
+	     * Tests the calculateDate method of the Calculator class.
+	     * <p>
+	     * This test checks if the calculateDate method correctly evaluates the date expression against the provided maps.
+	     * The expected result is a list of Booleans corresponding to the evaluation of each item in the maps.
+	     */
 	 @Test
 	    void testCalculateDate() {
 	        HashMap<String, List<String>> sMap = new HashMap<>();
@@ -37,6 +51,12 @@ public class Test_calculadora {
 	        assertEquals(Arrays.asList(false, true, false), result); 
 	    }
 
+	 /**
+	     * Tests the calculateTime method of the Calculator class.
+	     * <p>
+	     * This test checks if the calculateTime method correctly evaluates the time expression against the provided maps.
+	     * The expected result is a list of Booleans corresponding to the evaluation of each item in the maps.
+	     */
 	    @Test
 	    void testCalculateTime() {
 	        HashMap<String, List<String>> sMap = new HashMap<>();
@@ -49,7 +69,12 @@ public class Test_calculadora {
 	        assertEquals(Arrays.asList(false, true, false), result);
 	    }
 
-
+	    /**
+	     * Tests the calculateInt method of the Calculator class.
+	     * <p>
+	     * This test checks if the calculateInt method correctly evaluates the integer expression against the provided maps.
+	     * The expected result is a list of Booleans corresponding to the evaluation of each item in the maps.
+	     */
 	    @Test
 	    void testCalculateInt() {
 	        HashMap<String, List<String>> sMap = new HashMap<>();

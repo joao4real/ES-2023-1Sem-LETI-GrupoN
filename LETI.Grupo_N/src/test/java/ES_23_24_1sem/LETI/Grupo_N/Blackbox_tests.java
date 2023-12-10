@@ -12,9 +12,19 @@ import org.openqa.selenium.WebElement;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 
+/**
+ * Test class Blackbox_tests for automated interactions with a web page.
+ */
 public class Blackbox_tests{
 	
+	/** The WebDriver used for interactions with the Chrome browser. */
 	static WebDriver driver;
+	
+	/**
+     * Setup before running the tests. Initializes the WebDriver and opens the web page.
+     *
+     * @throws Exception if an error occurs during setup.
+     */
 	@BeforeClass
 	     public static void setUpBeforeClass() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "C:\\Users\\Pedro\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
@@ -22,6 +32,11 @@ public class Blackbox_tests{
 		driver.get("file:///C:\\Users\\Pedro\\Desktop\\Schedule.html");
 	}
  
+	  /**
+     * Web page interaction test. Clicks on a filter element and performs the search.
+     *
+     * @throws InterruptedException if an error occurs during the pause.
+     */
 	 @Test
      public void test() throws InterruptedException {
     	 
